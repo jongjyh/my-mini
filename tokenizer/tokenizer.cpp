@@ -293,7 +293,7 @@ namespace miniplc0 {
 		return std::make_pair(std::optional<Token>(), std::optional<CompilationError>());
 	}
 
-    std::make_optional<CompilationError> Tokenizer::checkToken(const Token& t) {
+    std::optional<CompilationError> Tokenizer::checkToken(const Token& t) {
 		switch (t.GetType()) {
 			case IDENTIFIER: {
 				auto val = t.GetValueString();
