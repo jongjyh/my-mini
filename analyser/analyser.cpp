@@ -138,8 +138,7 @@ namespace miniplc0 {
             if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
             // '<表达式>'
-            int32_t val;
-            auto err = analyseExpression(&val);
+            auto err = analyseExpression();
             if (err.has_value())
                 return err;
 
@@ -414,12 +413,12 @@ namespace miniplc0 {
             }
 		    case TokenType::UNSIGNED_INTEGER: {
                 int32_t num;
-                num = next.value().GetValue();
+                num = std::any_cast<int>(next.value());
                 _instructions.emplace_back(Operation::LIT, num);
                 break;
                 //数字直接入栈
             }
-		    case TokenType::IDENTIFIE{
+            case TokenType::IDENTIFIE:{
                         std::string str =next.value().GetValueString();
                         int index=getIndex(str);
                         _instructions.emplace_back(Operation::LOD, index);
