@@ -36,7 +36,7 @@ namespace miniplc0 {
 	// 需要补全
 	std::optional<CompilationError> Analyser::analyseMain() {
 		// 完全可以参照 <程序> 编写
-        auto err = analyseConstantDeclaration;
+        auto err = analyseConstantDeclaration();
         if (err.has_value())
             return err;
 		// <常量声明>
@@ -181,8 +181,8 @@ namespace miniplc0 {
 			    case TokenType::PRINT:
 			        analyseOutputStatement();
 			        break;
-			    case TokenType::SEMICOLON;
-			    return;
+			    case TokenType::SEMICOLON:
+			    return{};
 				// 这里需要你针对不同的预读结果来调用不同的子程序
 				// 注意我们没有针对空语句单独声明一个函数，因此可以直接在这里返回
 			default:
@@ -210,7 +210,7 @@ namespace miniplc0 {
 		//开头不是数字或者+-都错误了
 		if(next.value().GetType() ==UNSIGNED_INTEGER)
         {
-		    num=next.value();
+		    num=next.value().GetValue();
         }
 		//开头是数字，则把数字赋值给num，然后确保永远以+-开头
 		while(1)
@@ -234,7 +234,7 @@ namespace miniplc0 {
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
                 num+=next.value();
                 if(num > 2147483647 )
-                    return std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow);
+                    return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
             }
 		    else if(next.value().GetType() ==PLUS_SIGN)
@@ -242,9 +242,9 @@ namespace miniplc0 {
                 next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num-=next.value();
+                num-=next.value().GetValue();
                 if(num < -2147483648 )
-                    return std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow);
+                    return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
             }
 
@@ -288,11 +288,12 @@ namespace miniplc0 {
 	// <赋值语句> ::= <标识符>'='<表达式>';'
 	// 需要补全
 	std::optional<CompilationError> Analyser::analyseAssignmentStatement() {
+	    auto next=nextToken();
 		// 这里除了语法分析以外还要留意
         if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidPrint);
 		// 标识符声明过吗？
-		string str=next.value().GetValueString();
+		std::string str=next.value().GetValueString();
         if(!Analyser::isDeclared(str))
         {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
@@ -412,12 +413,12 @@ namespace miniplc0 {
 		        break;
 		    case TokenType::UNSIGNED_INTEGER:
 		        int32_t num;
-		        num=next.value();
+		        num=next.value().GetValue();
                 _instructions.emplace_back(Operation::LIT, num);
                 break;
                 //数字直接入栈
 		    case TokenType::IDENTIFIER:
-		        string str =next.value().GetValueString();
+		        std::string str =next.value().GetValueString();
                 int index=getIndex(str);
                 _instructions.emplace_back(Operation::LOD, index);
 		        //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
