@@ -189,7 +189,7 @@ namespace miniplc0 {
 				// 如果当前已经读到了文件尾，则解析已经读到的字符串
                 if (!current_char.has_value())
                 {
-                    Strsing str;
+                    String str;
                     ss>>str;
 
                     if(str=="var")
