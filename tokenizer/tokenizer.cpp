@@ -2,7 +2,7 @@
 
 #include <cctype>
 #include <sstream>
-
+#include <string>
 namespace miniplc0 {
 
 	std::pair<std::optional<Token>, std::optional<CompilationError>> Tokenizer::NextToken() {
@@ -142,9 +142,7 @@ namespace miniplc0 {
                     if(container > 2147483647 )
                         return std::make_pair(std::optional<Token>(),
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
-                    std::stringstream stream;
-                    stream << container;
-                    stream >> num;
+                    int num = container;
                     return std::make_pair(
                             std::make_optional<Token>(TokenType::UNSIGNED_INTEGER, num, pos, currentPos()),
                             std::optional<CompilationError>());
