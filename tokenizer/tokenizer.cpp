@@ -202,7 +202,7 @@ namespace miniplc0 {
                     else if(str=="print")
                         return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::make_optional<CompilationError>());
                     else
-                        return std::make_pair(std::optional<Token>(TokenType::IDENTIFIER,str,pos,currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER,str,pos,currentPos()), std::make_optional<CompilationError>());
                 }
 				//     如果解析结果是关键字，那么返回对应关键字的token，否则返回标识符的token
 				auto ch = current_char.value();
