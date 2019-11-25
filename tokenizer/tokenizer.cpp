@@ -2,7 +2,6 @@
 
 #include <cctype>
 #include <sstream>
-#include <string>
 namespace miniplc0 {
 
 	std::pair<std::optional<Token>, std::optional<CompilationError>> Tokenizer::NextToken() {
@@ -189,7 +188,7 @@ namespace miniplc0 {
 				// 如果当前已经读到了文件尾，则解析已经读到的字符串
                 if (!current_char.has_value())
                 {
-                    String str;
+                    std::string str;
                     ss>>str;
 
                     if(str=="var")
@@ -216,7 +215,7 @@ namespace miniplc0 {
 				else
                 {
 				    unreadLast();
-				    String str;
+				    std::string  str;
 				    ss>>str;
                     if (str == "begin")
                         return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()),std::optional<CompilationError>());
