@@ -116,6 +116,7 @@ namespace miniplc0 {
             }
             // <标识符>
             next = nextToken();
+            std:: string str=next.value().GetValueString();
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
             if (isDeclared(next.value().GetValueString()))
@@ -146,8 +147,9 @@ namespace miniplc0 {
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
-            // 生成一次 LIT 指令加载常量
-            _instructions.emplace_back(Operation::LIT, val);
+
+            int index=getIndex(str);
+            _instructions.emplace_back(Operation::STO, index);
         }
 		return {};
 	}
@@ -418,7 +420,7 @@ namespace miniplc0 {
                 break;
                 //数字直接入栈
             }
-            case TokenType::IDENTIFIE:{
+            case TokenType::IDENTIFIER:{
                         std::string str =next.value().GetValueString();
                         int index=getIndex(str);
                         _instructions.emplace_back(Operation::LOD, index);
