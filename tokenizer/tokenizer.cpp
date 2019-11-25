@@ -104,7 +104,15 @@ namespace miniplc0 {
 					///// 请填空：
 					///// 对于其他的可接受字符
 					///// 切换到对应的状态
-
+                        case ';':
+                            current_state= DFAState::SEMICOLON_STATE;
+                            break;
+                        case '(':
+                            current_state= DFAState::LEFTBRACKET_STATE;
+                            break;
+                        case ')':
+                            current_state= DFAState::RIGHTBRACKET_STATE;
+                            break;
 					// 不接受的字符导致的不合法的状态
 					default:
 						invalid = true;
