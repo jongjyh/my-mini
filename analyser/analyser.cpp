@@ -139,7 +139,7 @@ namespace miniplc0 {
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
             // '<表达式>'
             int32_t val;
-            auto err = analyseExpression(val);
+            auto err = analyseExpression(&val);
             if (err.has_value())
                 return err;
 
@@ -210,7 +210,7 @@ namespace miniplc0 {
 		//开头不是数字或者+-都错误了
 		if(next.value().GetType() ==UNSIGNED_INTEGER)
         {
-		    num=next.value().GetValue();
+		    num=std::any_cast<int>(next.value());
         }
 		//开头是数字，则把数字赋值给num，然后确保永远以+-开头
 		while(1)
@@ -232,7 +232,7 @@ namespace miniplc0 {
 		        next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num+=next.value();
+                num+=std::any_cast<int>(next.value());
                 if(num > 2147483647 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
@@ -242,7 +242,7 @@ namespace miniplc0 {
                 next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num-=next.value().GetValue();
+                num-=std::any_cast<int>(next.value());
                 if(num < -2147483648 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
@@ -403,27 +403,29 @@ namespace miniplc0 {
 		if (!next.has_value())
 			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
 		switch (next.value().GetType()) {
-		    case TokenType::LEFT_BRACKET:
+		    case TokenType::LEFT_BRACKET: {
                 auto err = analyseExpression();
                 if (err.has_value())
                     return err;
-                next=nextToken();
+                next = nextToken();
                 if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-		        break;
-		    case TokenType::UNSIGNED_INTEGER:
-		        int32_t num;
-		        num=next.value().GetValue();
+                break;
+            }
+		    case TokenType::UNSIGNED_INTEGER: {
+                int32_t num;
+                num = next.value().GetValue();
                 _instructions.emplace_back(Operation::LIT, num);
                 break;
                 //数字直接入栈
-		    case TokenType::IDENTIFIER:
-		        std::string str =next.value().GetValueString();
-                int index=getIndex(str);
-                _instructions.emplace_back(Operation::LOD, index);
-		        //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
-		        break;
-
+            }
+		    case TokenType::IDENTIFIE{
+                        std::string str =next.value().GetValueString();
+                        int index=getIndex(str);
+                        _instructions.emplace_back(Operation::LOD, index);
+                        //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
+                        break;
+                }
 			// 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
 			// 但是要注意 default 返回的是一个编译错误
 		default:
