@@ -192,17 +192,17 @@ namespace miniplc0 {
                     ss>>str;
 
                     if(str=="var")
-                        return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::optional<CompilationError>());
                     else if(str=="begin")
-                        return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()), std::optional<CompilationError>());
                     else if(str=="end")
-                        return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()), std::optional<CompilationError>());
                     else if(str=="const")
-                        return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()), std::optional<CompilationError>());
                     else if(str=="print")
-                        return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::optional<CompilationError>());
                     else
-                        return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER,str,pos,currentPos()), std::make_optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER,str,pos,currentPos()), std::optional<CompilationError>());
                 }
 				//     如果解析结果是关键字，那么返回对应关键字的token，否则返回标识符的token
 				auto ch = current_char.value();
@@ -293,7 +293,7 @@ namespace miniplc0 {
 		return std::make_pair(std::optional<Token>(), std::optional<CompilationError>());
 	}
 
-	std::optional<CompilationError> Tokenizer::checkToken(const Token& t) {
+    std::make_optional<CompilationError> Tokenizer::checkToken(const Token& t) {
 		switch (t.GetType()) {
 			case IDENTIFIER: {
 				auto val = t.GetValueString();
