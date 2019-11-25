@@ -191,6 +191,7 @@ namespace miniplc0 {
                 {
                     string str;
                     ss>>str;
+
                     if(str=="var")
                         return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::make_optional<CompilationError>());
                     else if(str=="begin")
