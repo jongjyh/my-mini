@@ -211,7 +211,7 @@ namespace miniplc0 {
 		//开头不是数字或者+-都错误了
 		if(next.value().GetType() ==UNSIGNED_INTEGER)
         {
-		    num=std::any_cast<int>(next.value());
+		    num=std::any_cast<int>(next.value().GetValue());
         }
 		//开头是数字，则把数字赋值给num，然后确保永远以+-开头
 		while(1)
@@ -233,7 +233,7 @@ namespace miniplc0 {
 		        next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num+=std::any_cast<int>(next.value());
+                num+=std::any_cast<int>(next.value().GetValue());
                 if(num > 2147483647 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
@@ -243,7 +243,7 @@ namespace miniplc0 {
                 next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num-=std::any_cast<int>(next.value());
+                num-=std::any_cast<int>(next.value().GetValue());
                 if(num < -2147483648 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
                 out=num;
@@ -415,7 +415,7 @@ namespace miniplc0 {
             }
 		    case TokenType::UNSIGNED_INTEGER: {
                 int32_t num;
-                num = std::any_cast<int>(next.value());
+                num = std::any_cast<int>(next.value().GetValue());
                 _instructions.emplace_back(Operation::LIT, num);
                 break;
                 //数字直接入栈
