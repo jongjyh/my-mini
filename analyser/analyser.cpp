@@ -128,8 +128,7 @@ namespace miniplc0 {
             {
                 addUninitializedVariable(var);
                 _instructions.emplace_back(Operation::LIT, 0);
-                int index=getIndex(var.GetValueString());
-                _instructions.emplace_back(Operation::STO, index);
+
                 continue;
             }
 
@@ -151,8 +150,7 @@ namespace miniplc0 {
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
 
-            int index=getIndex(str);
-            _instructions.emplace_back(Operation::STO, index);
+
         }
 		return {};
 	}
