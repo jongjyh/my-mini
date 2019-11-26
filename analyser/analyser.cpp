@@ -204,9 +204,9 @@ namespace miniplc0 {
 		// 同时要注意是否溢出
 		int64_t num=0;
 		auto next =nextToken();
-		if(!next.has_value() || next.value().GetType() !=MINUS_SIGN
-		                     || next.value().GetType() !=PLUS_SIGN
-		                     || next.value().GetType() !=UNSIGNED_INTEGER)
+		if(!next.has_value() ||( next.value().GetType() !=MINUS_SIGN
+		                     && next.value().GetType() !=PLUS_SIGN
+		                     && next.value().GetType() !=UNSIGNED_INTEGER)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrConstantNeedValue);
 		//开头不是数字或者+-都错误了
 		if(next.value().GetType() ==UNSIGNED_INTEGER)
@@ -233,7 +233,7 @@ namespace miniplc0 {
             {
 		        //预读一个数字
 		        next = nextToken();
-                if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
+                if(!next.has_value()||next.value().GetType() !=TokenType::UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
                 num+=std::any_cast<int>(next.value().GetValue());
                 if(num > 2147483647 )
