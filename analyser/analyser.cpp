@@ -192,6 +192,7 @@ namespace miniplc0 {
                     break;
                 }
 			    case TokenType::SEMICOLON:
+			        next=nextToken();
 			    break;
 
 				// 这里需要你针对不同的预读结果来调用不同的子程序
