@@ -312,7 +312,7 @@ namespace miniplc0 {
 		// 标识符是常量吗？
 		if(Analyser::isConstant(str))
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrAssignToConstant);
-
+		next =nextToken();
         if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidAssignment);
         //调用exp子程序
@@ -323,8 +323,9 @@ namespace miniplc0 {
         //但是要分清楚是未初始化的还是已经初始化的变量。
         int index =getIndex(str);
         _instructions.emplace_back(Operation::STO, index);// 需要生成指令吗？
+        next=nextToken();
         if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
-        return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidAssignment);
+        return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
         return {};
 	}
 
