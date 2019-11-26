@@ -217,10 +217,9 @@ namespace miniplc0 {
 		while(1)
         {
 		    next=nextToken();
-            if(!next.has_value() || next.value().GetType() !=MINUS_SIGN
-               || next.value().GetType() !=PLUS_SIGN
-               ){
-
+            if(!next.has_value() || (next.value().GetType() !=MINUS_SIGN
+               && next.value().GetType() !=PLUS_SIGN
+               )){
                 out=num;
                 unreadToken();
                 return {};
