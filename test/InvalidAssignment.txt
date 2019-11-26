@@ -1,0 +1,19 @@
+begin
+	const sdfsfa = 5;
+	const dfsaf = +999;
+	const df = -999;
+	
+	var dfsd;
+	var a;
+	a 5;
+	var wwww = 5 + dfsaf - (5 * df / (1 + 4 / 6) + dfsaf);
+	
+	dfsd = (5 * 6 + 9) * sdfsfa;
+	print(wwww + dfsd / 5 + 3);
+	;
+	;
+	;
+	;
+	
+
+end
