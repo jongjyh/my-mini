@@ -220,6 +220,8 @@ namespace miniplc0 {
             if(!next.has_value() || next.value().GetType() !=MINUS_SIGN
                || next.value().GetType() !=PLUS_SIGN
                ){
+
+                out=num;
                 unreadToken();
                 return {};
                }
@@ -236,7 +238,7 @@ namespace miniplc0 {
                 num+=std::any_cast<int>(next.value().GetValue());
                 if(num > 2147483647 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
-                out=num;
+
             }
 		    else if(next.value().GetType() ==PLUS_SIGN)
             {
@@ -246,7 +248,7 @@ namespace miniplc0 {
                 num-=std::any_cast<int>(next.value().GetValue());
                 if(num < -2147483648 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
-                out=num;
+
             }
 
         }
