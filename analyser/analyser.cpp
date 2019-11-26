@@ -1,7 +1,7 @@
 #include "analyser.h"
 
 #include <climits>
-
+#include<iostream>
 namespace miniplc0 {
 	std::pair<std::vector<Instruction>, std::optional<CompilationError>> Analyser::Analyse() {
 		auto err = analyseProgram();
@@ -165,6 +165,7 @@ namespace miniplc0 {
 	std::optional<CompilationError> Analyser::analyseStatementSequence() {
 		while (true) {
 			// 预读
+			std::cout<<1111<<"\n";
 			auto next = nextToken();
 			if (!next.has_value())
 				return {};
