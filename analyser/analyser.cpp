@@ -126,7 +126,7 @@ namespace miniplc0 {
             next=nextToken();
             if (!next.has_value() && next.value().GetType() == TokenType::SEMICOLON)
             {
-                addUninitializedVariable(Token);
+                addUninitializedVariable(var);
                 return {};
             }
 
@@ -134,7 +134,7 @@ namespace miniplc0 {
                 unreadToken();
 
             // '='
-            addVariable(next.value());
+            addVariable(var);
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
