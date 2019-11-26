@@ -127,7 +127,7 @@ namespace miniplc0 {
             if (next.has_value() && next.value().GetType() == TokenType::SEMICOLON)
             {
                 addUninitializedVariable(var);
-
+                _instructions.emplace_back(Operation::LIT, 0);
                 int index=getIndex(var.GetValueString());
                 _instructions.emplace_back(Operation::STO, index);
                 continue;
