@@ -442,8 +442,8 @@ namespace miniplc0 {
                         std::string str =next.value().GetValueString();
                         if(!isDeclared(str))
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
-                        std::cout<<str<<" "<<isUninitializedVariable(str)<<"\n";
-                        if(!isUninitializedVariable(str))
+
+                        if(isUninitializedVariable(str))
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
                         int index=getIndex(str);
                         _instructions.emplace_back(Operation::LOD, index);
