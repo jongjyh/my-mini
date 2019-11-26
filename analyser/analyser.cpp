@@ -245,7 +245,7 @@ namespace miniplc0 {
 		        next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=TokenType::UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num+=std::any_cast<int>(next.value().GetValue());
+                num-=std::any_cast<int>(next.value().GetValue());
                 if(num > 2147483647 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
 
@@ -255,7 +255,7 @@ namespace miniplc0 {
                 next = nextToken();
                 if(!next.has_value()||next.value().GetType() !=UNSIGNED_INTEGER)
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-                num-=std::any_cast<int>(next.value().GetValue());
+                num+=std::any_cast<int>(next.value().GetValue());
                 if(num < -2147483648 )
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
 
