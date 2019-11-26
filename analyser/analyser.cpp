@@ -48,9 +48,6 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
 		// <语句序列>
-		err = analyseStatementSequence();
-        if (err.has_value())
-            return err;
 		return {};
 	}
 
@@ -179,14 +176,22 @@ namespace miniplc0 {
 			}
 			std::optional<CompilationError> err;
 			switch (next.value().GetType()) {
-			    case TokenType::IDENTIFIER:
-                    Analyser::analyseAssignmentStatement();
-			        break;
-			    case TokenType::PRINT:
-			        analyseOutputStatement();
-			        break;
+			    case TokenType::IDENTIFIER: {
+
+                    auto err = Analyser::analyseAssignmentStatement();
+                    if (err.has_value())
+                        return err;
+                    break;
+                }
+			    case TokenType::PRINT: {
+                    auto err = analyseOutputStatement();
+                    if (err.has_value())
+                        return err;
+                    break;
+                }
 			    case TokenType::SEMICOLON:
-			    return{};
+			    break;
+
 				// 这里需要你针对不同的预读结果来调用不同的子程序
 				// 注意我们没有针对空语句单独声明一个函数，因此可以直接在这里返回
 			default:
