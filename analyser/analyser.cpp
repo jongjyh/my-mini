@@ -324,7 +324,11 @@ namespace miniplc0 {
             return err;
         //exp子程序会将算好的值存在栈顶，只要我们计算identi的索引，然后使用sto指令就可以实现赋值
         //但是要分清楚是未初始化的还是已经初始化的变量。
+        if(isUninitializedVariable(str))
+            InitialToken(str);
+        //给未初始化的变量赋值，则需要把符号从未初始化表中删除，加入到初始化表中
         int index =getIndex(str);
+
         _instructions.emplace_back(Operation::STO, index);// 需要生成指令吗？
         next=nextToken();
         if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
@@ -438,7 +442,8 @@ namespace miniplc0 {
                         std::string str =next.value().GetValueString();
                         if(!isDeclared(str))
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
-
+                        if(!isUninitializedVariable(str))
+                            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
                         int index=getIndex(str);
                         _instructions.emplace_back(Operation::LOD, index);
                         //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
@@ -457,14 +462,23 @@ namespace miniplc0 {
 	}
 
 	std::optional<Token> Analyser::nextToken() {
-		if (_offset == _tokens.size())
-			return {};
-		// 考虑到 _tokens[0..._offset-1] 已经被分析过了
-		// 所以我们选择 _tokens[0..._offset-1] 的 EndPos 作为当前位置
-		_current_pos = _tokens[_offset].GetEndPos();
-		return _tokens[_offset++];
-	}
+        if (_offset == _tokens.size())
+            return {};
+        // 考虑到 _tokens[0..._offset-1] 已经被分析过了
+        // 所以我们选择 _tokens[0..._offset-1] 的 EndPos 作为当前位置
+        _current_pos = _tokens[_offset].GetEndPos();
+        return _tokens[_offset++];
+    }
 
+    bool Analyser::InitialToken(std::string &str){
+	    int index=getIndex(str);
+	    if(!Analyser::isUninitializedVariable(str))
+	        return false;
+	    _uninitialized_vars.erase(str);
+	    //消去在未初始化中这一声名
+	    _vars[str]=index;
+	    return true;
+	}
 	void Analyser::unreadToken() {
 		if (_offset == 0)
 			DieAndPrint("analyser unreads token from the begining.");
