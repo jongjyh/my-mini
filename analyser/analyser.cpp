@@ -74,7 +74,7 @@ namespace miniplc0 {
 				return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
 			if (isDeclared(next.value().GetValueString()))
 				return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
-			addConstant(next.value());
+			addConstant(next.value().GetValueString());
 
 			// '='
 			next = nextToken();
@@ -126,7 +126,7 @@ namespace miniplc0 {
             next=nextToken();
             if (!next.has_value() && next.value().GetType() == TokenType::SEMICOLON)
             {
-                addUninitializedVariable(next.value());
+                addUninitializedVariable(next.value().GetValueString());
                 return {};
             }
 
@@ -134,7 +134,7 @@ namespace miniplc0 {
                 unreadToken();
 
             // '='
-            addVariable(next.value());
+            addVariable(next.value().GetValueString());
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::EQUAL_SIGN)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
