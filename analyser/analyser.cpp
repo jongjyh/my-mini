@@ -165,8 +165,9 @@ namespace miniplc0 {
 	std::optional<CompilationError> Analyser::analyseStatementSequence() {
 		while (true) {
 			// 预读
-			std::cout<<1111<<"\n";
+
 			auto next = nextToken();
+			std::cout<<next.value().GerValueString()<<"\n";
 			if (!next.has_value())
 				return {};
 			unreadToken();
