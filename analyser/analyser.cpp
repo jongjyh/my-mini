@@ -442,6 +442,7 @@ namespace miniplc0 {
                         std::string str =next.value().GetValueString();
                         if(!isDeclared(str))
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
+                        std::cout<<str<<" "<<isUninitializedVariable(str)<<"\n";
                         if(!isUninitializedVariable(str))
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
                         int index=getIndex(str);
@@ -474,6 +475,7 @@ namespace miniplc0 {
 	    int index=getIndex(str);
 	    if(!Analyser::isUninitializedVariable(str))
 	        return false;
+
 	    _uninitialized_vars.erase(str);
 	    //消去在未初始化中这一声名
 	    _vars[str]=index;
