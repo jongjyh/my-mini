@@ -212,11 +212,12 @@ namespace miniplc0 {
 		if(next.value().GetType() ==UNSIGNED_INTEGER)
         {
 		    num=std::any_cast<int>(next.value().GetValue());
+            next=nextToken();
         }
 		//开头是数字，则把数字赋值给num，然后确保永远以+-开头
 		while(1)
         {
-		    next=nextToken();
+
             if(!next.has_value() || (next.value().GetType() !=MINUS_SIGN
                && next.value().GetType() !=PLUS_SIGN
                )){
@@ -249,7 +250,7 @@ namespace miniplc0 {
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIntegerOverflow);
 
             }
-
+            next=nextToken();
         }
 		return {};
 	}
