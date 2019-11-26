@@ -48,6 +48,9 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
 		// <语句序列>
+		err = analyseStatementSequence();
+        if (err.has_value())
+            return err;
 		return {};
 	}
 
