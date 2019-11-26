@@ -124,7 +124,7 @@ namespace miniplc0 {
             Token var=next.value();
             // 变量可能没有初始化，仍然需要一次预读
             next=nextToken();
-            if (!next.has_value() && next.value().GetType() == TokenType::SEMICOLON)
+            if (next.has_value() && next.value().GetType() == TokenType::SEMICOLON)
             {
                 addUninitializedVariable(var);
                 return {};
