@@ -167,7 +167,6 @@ namespace miniplc0 {
 			// 预读
 
 			auto next = nextToken();
-			std::cout<<next.value().GetValueString()<<"\n";
 			if (!next.has_value())
 				return {};
 			unreadToken();
