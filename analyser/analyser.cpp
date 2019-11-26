@@ -436,6 +436,9 @@ namespace miniplc0 {
             }
             case TokenType::IDENTIFIER:{
                         std::string str =next.value().GetValueString();
+                        if(!isDeclared(str))
+                            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
+
                         int index=getIndex(str);
                         _instructions.emplace_back(Operation::LOD, index);
                         //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
