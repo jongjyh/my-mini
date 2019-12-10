@@ -36,17 +36,23 @@ namespace miniplc0 {
 		std::optional<CompilationError> analyseProgram();
 		// <主过程>
 		std::optional<CompilationError> analyseMain();
-		// <常量声明>
-		std::optional<CompilationError> analyseConstantDeclaration();
+
 		// <变量声明>
 		std::optional<CompilationError> analyseVariableDeclaration();
+		// 函数声名
+        std::optional<CompilationError> analyseFunctionDeclaration()
 		// <语句序列>
 		std::optional<CompilationError> analyseStatementSequence();
-		// <常表达式>
-		// 这里的 out 是常表达式的值
-		std::optional<CompilationError> analyseConstantExpression(int32_t& out);
+        // <单语句>
+        std::optional<CompilationError> analyseStatement();
+        //复合语句
+        std::optional<CompilationError> Analyser::analyseCompoundStatement()
+        //<参数列表>
+        std::optional<CompilationError> analyseParameterClause();
 		// <表达式>
 		std::optional<CompilationError> analyseExpression();
+		//<表达式list>
+        std::optional<CompilationError> analyseExpressionList();
 		// <赋值语句>
 		std::optional<CompilationError> analyseAssignmentStatement();
 		// <输出语句>
@@ -54,8 +60,24 @@ namespace miniplc0 {
 		// <项>
 		std::optional<CompilationError> analyseItem();
 		// <因子>
-		std::optional<CompilationError> analyseFactor();
 
+		std::optional<CompilationError> analyseFactor();
+		//{}块
+		std::optional<CompilationError> analyseCompoundStatement();
+		//条件语句
+        std::optional<CompilationError> analyseConditionStatement();
+        //循环语句
+        std::optional<CompilationError> analyseLoopStatement();
+        //输出语句
+        std::optional<CompilationError> analysePrintStatement();
+        //扫描语句
+        std::optional<CompilationError> analyseScanStatement();
+        //函数调用语句
+        std::optional<CompilationError> analyseFunctionCall();
+        //返回语句
+        std::optional<CompilationError> analyseReturnStatement();
+        //条件表达式
+        std::optional<CompilationError> analyseConditionExp();
 		// Token 缓冲区相关操作
 
 		// 返回下一个 token

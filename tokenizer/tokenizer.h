@@ -21,7 +21,10 @@ namespace miniplc0 {
 		// 状态机的所有状态
 		enum DFAState {
 			INITIAL_STATE,
-			UNSIGNED_INTEGER_STATE,
+			ZERO_STATE,
+            DECIMAL_STATE,
+            HEXADECIMAL_STATE,
+            FLOATING_STATE,
 			PLUS_SIGN_STATE,
 			MINUS_SIGN_STATE,
 			DIVISION_SIGN_STATE,
@@ -29,8 +32,14 @@ namespace miniplc0 {
 			IDENTIFIER_STATE,
 			EQUAL_SIGN_STATE,
 			SEMICOLON_STATE,
+            GREATER_STATE,
+            NOT_EQU_STATE,
+            LESS_STATE,
+            COMMA_STATE,
 			LEFTBRACKET_STATE,
-			RIGHTBRACKET_STATE
+			RIGHTBRACKET_STATE,
+            LEFTBRACE_STATE,
+            RIGHTBRACE_STATE
 		};
 	public:
 		Tokenizer(std::istream& ifs)

@@ -10,21 +10,49 @@ namespace miniplc0 {
 
 	enum TokenType {
 		NULL_TOKEN,
-		UNSIGNED_INTEGER,
+        HEXADECIMAL,//十六进制
+        DECIMAL,//十进制
+		FLOATING,
 		IDENTIFIER,
-		BEGIN,
-		END,
-		VAR,
+
+		//类型部分
+		VOID,
+		INT,
+		CHAR,
+		DOUBLE,
 		CONST,
+		STRUCT,
+		IF,
+		ELSE,
+		SWITCH,
+		CASE,
+		DEFAULT,
+		WHILE,
+		FOR,
+		DO,
+		RETURN,
+		BREAK,
+		CONTINUE,
 		PRINT,
-		PLUS_SIGN,
-		MINUS_SIGN,
-		MULTIPLICATION_SIGN,
-		DIVISION_SIGN,
-		EQUAL_SIGN,
-		SEMICOLON,
-		LEFT_BRACKET,
-		RIGHT_BRACKET
+		SCAN,
+		//符号类型
+		PLUS_SIGN,//+
+		MINUS_SIGN,//-
+		MULTIPLICATION_SIGN,// *
+		DIVISION_SIGN,// /
+		EQUAL_SIGN,// =
+        GREATER_THAN_SIGN,//>
+        LESS_THAN_SIGN,//<
+        GRT_EQU_SIGN,// >=
+        LES_EQU_SIGN,// <=
+        IS_EQU_SIGN,// ==
+        NOT_EQU_SIGN,// !=
+		COMMA,// ,
+		SEMICOLON,// ;
+		LEFT_BRACKET,//(
+		RIGHT_BRACKET//)
+		LEFT_BRACE,
+		RIGHT_BRACE
 	};
 
 	class Token final {

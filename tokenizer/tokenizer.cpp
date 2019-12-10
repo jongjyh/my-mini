@@ -75,15 +75,21 @@ namespace miniplc0 {
 					current_state = DFAState::INITIAL_STATE; // 保留当前状态为初始状态，此处直接break也是可以的
 				else if (!miniplc0::isprint(ch)) // control codes and backspace
 					invalid = true;
+				else if(ch=='0')//读到0，进入0状态
+				    current_state= DFAState ::ZERO_STATE;
 				else if (miniplc0::isdigit(ch)) // 读到的字符是数字
-					current_state = DFAState::UNSIGNED_INTEGER_STATE; // 切换到无符号整数的状态
+					current_state = DFAState::DECIMAL_STATE; // 切换到无符号整数的状态
 				else if (miniplc0::isalpha(ch)) // 读到的字符是英文字母
 					current_state = DFAState::IDENTIFIER_STATE; // 切换到标识符的状态
 				else {
 					switch (ch) {
-					case '=': // 如果读到的字符是`=`，则切换到等于号的状态
+
+
+
+					case '=': // 如果读到的字符是`=`，则切换到等于号的状态 = OR ==
 						current_state = DFAState::EQUAL_SIGN_STATE;
 						break;
+
 					case '-':
 					    current_state= DFAState::MINUS_SIGN_STATE;
                             break;
@@ -104,6 +110,18 @@ namespace miniplc0 {
 					///// 请填空：
 					///// 对于其他的可接受字符
 					///// 切换到对应的状态
+                        case '!':
+                            current_state = DFAState::NOT_EQU_STATE;
+                            break;
+                        case '<':
+                            current_state = DFAState::LESS_STATE;
+                            break;
+                        case '>':
+                            current_state = DFAState::GREATER_STATE;
+                            break;
+                        case ',':
+                            current_state = DFAState::COMMA_STATE;
+                            break;
                         case ';':
                             current_state= DFAState::SEMICOLON_STATE;
                             break;
@@ -113,6 +131,13 @@ namespace miniplc0 {
                         case ')':
                             current_state= DFAState::RIGHTBRACKET_STATE;
                             break;
+                        case '{':
+                            current_state= DFAState::LEFTBRACE_STATE;
+                            break;
+                        case '}':
+                            current_state= DFAState::RIGHTBRACE_STATE;
+                            break;
+
 					// 不接受的字符导致的不合法的状态
 					default:
 						invalid = true;
@@ -134,9 +159,70 @@ namespace miniplc0 {
 					ss << ch; // 存储读到的字符
 				break;
 			}
+			// 0 状态
+			case ZERO_STATE :{
+			    if(ch == 'x' ||ch == 'X')
+                {
+			        current_state=DFAState ::HEXADECIMAL_STATE;
+			        ss<<ch;
+			        break;
+                }
+			    //是数字说明是一个前导0，编译错误
+			    if(isdigit(ch))
+                    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrLeadingZero));
+			    //不是数字则直接返回0这个数字
+			    unreadLast();
+                return std::make_pair(std::make_optional<Token>(TokenType::DECIMAL, 0, pos, currentPos()), std::optional<CompilationError>());
+			}
+			// 十六进制状态
+			case HEXADECIMAL_STATE:{
+			    //读到文件尾
+                if (!current_char.has_value())
+                    // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
+                {
+                    long long  container;
 
+                    sscanf(ss.str.c_str(), "%x", &container);
+
+                    if(container > 2147483647 )
+                        return std::make_pair(std::optional<Token>(),
+                                              std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
+                    int num = container;
+                    return std::make_pair(
+                            std::make_optional<Token>(TokenType::HEXADECIMAL, num, pos, currentPos()),
+                            std::optional<CompilationError>());
+                }
+
+                auto ch = current_char.value();
+                auto invalid = false;
+                if(miniplc0::isdigit(ch))
+                    // 如果读到的字符是数字，则存储读到的字符
+                    ss << ch;
+                    // 如果读到的是字母，则存储读到的字符，并切换状态到标识符
+                else if(miniplc0::isalpha(ch))
+                {
+                    ss << ch;
+                    current_state = DFAState::IDENTIFIER_STATE;
+                }
+                    // 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串为整数
+                else
+                {
+                    unreadLast();
+                    long long  container;
+
+                    sscanf(ss.str.c_str(), "%x", &container);
+                    if(container > 2147483647 )
+                        return std::make_pair(std::optional<Token>(),
+                                              std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
+                    int32_t  num=container;
+                    return std::make_pair(
+                            std::make_optional<Token>(TokenType::HEXADECIMAL, num, pos, currentPos()),
+                            std::optional<CompilationError>());
+                }
+                break;
+			}
 								// 当前状态是无符号整数
-			case UNSIGNED_INTEGER_STATE: {
+			case DECIMAL_STATE: {
 
 				// 请填空：
 				// 如果当前已经读到了文件尾，则解析已经读到的字符串为整数
@@ -199,18 +285,44 @@ namespace miniplc0 {
                     std::string str;
                     ss>>str;
 
-                    if(str=="var")
-                        return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()), std::optional<CompilationError>());
-                    else if(str=="begin")
-                        return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()), std::optional<CompilationError>());
-                    else if(str=="end")
-                        return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()), std::optional<CompilationError>());
-                    else if(str=="const")
-                        return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()), std::optional<CompilationError>());
-                    else if(str=="print")
-                        return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()), std::optional<CompilationError>());
+                    if (str == "void")
+                        return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "int")
+                        return std::make_pair(std::make_optional<Token>(TokenType::INT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "char")
+                        return std::make_pair(std::make_optional<Token>(TokenType::CHAR, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "double")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DOUBLE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "const")
+                        return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "struct")
+                        return std::make_pair(std::make_optional<Token>(TokenType::STRUCT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "if")
+                        return std::make_pair(std::make_optional<Token>(TokenType::IF, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "else")
+                        return std::make_pair(std::make_optional<Token>(TokenType::ELSE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "switch")
+                        return std::make_pair(std::make_optional<Token>(TokenType::SWITCH, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "case")
+                        return std::make_pair(std::make_optional<Token>(TokenType::CASE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "default")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DEFAULT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "while")
+                        return std::make_pair(std::make_optional<Token>(TokenType::WHILE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "for")
+                        return std::make_pair(std::make_optional<Token>(TokenType::FOR, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "do")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DO, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "return")
+                        return std::make_pair(std::make_optional<Token>(TokenType::RETURN, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "break")
+                        return std::make_pair(std::make_optional<Token>(TokenType::BREAK, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "print")
+                        return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "scan")
+                        return std::make_pair(std::make_optional<Token>(TokenType::SCAN, str, pos, currentPos()),std::optional<CompilationError>());
                     else
-                        return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER,str,pos,currentPos()), std::optional<CompilationError>());
+                        return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()),std::optional<CompilationError>());
                 }
 				//     如果解析结果是关键字，那么返回对应关键字的token，否则返回标识符的token
 				auto ch = current_char.value();
@@ -225,16 +337,42 @@ namespace miniplc0 {
 				    unreadLast();
 				    std::string  str;
 				    ss>>str;
-                    if (str == "begin")
-                        return std::make_pair(std::make_optional<Token>(TokenType::BEGIN, str, pos, currentPos()),std::optional<CompilationError>());
-                    else if (str == "end")
-                        return std::make_pair(std::make_optional<Token>(TokenType::END, str, pos, currentPos()),std::optional<CompilationError>());
+                    if (str == "void")
+                        return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "int")
+                        return std::make_pair(std::make_optional<Token>(TokenType::INT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "char")
+                        return std::make_pair(std::make_optional<Token>(TokenType::CHAR, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "double")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DOUBLE, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "const")
                         return std::make_pair(std::make_optional<Token>(TokenType::CONST, str, pos, currentPos()),std::optional<CompilationError>());
-                    else if (str == "var")
-                        return std::make_pair(std::make_optional<Token>(TokenType::VAR, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "struct")
+                        return std::make_pair(std::make_optional<Token>(TokenType::STRUCT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "if")
+                        return std::make_pair(std::make_optional<Token>(TokenType::IF, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "else")
+                        return std::make_pair(std::make_optional<Token>(TokenType::ELSE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "switch")
+                        return std::make_pair(std::make_optional<Token>(TokenType::SWITCH, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "case")
+                        return std::make_pair(std::make_optional<Token>(TokenType::CASE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "default")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DEFAULT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "while")
+                        return std::make_pair(std::make_optional<Token>(TokenType::WHILE, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "for")
+                        return std::make_pair(std::make_optional<Token>(TokenType::FOR, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "do")
+                        return std::make_pair(std::make_optional<Token>(TokenType::DO, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "return")
+                        return std::make_pair(std::make_optional<Token>(TokenType::RETURN, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "break")
+                        return std::make_pair(std::make_optional<Token>(TokenType::BREAK, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "print")
                         return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()),std::optional<CompilationError>());
+                    else if (str == "scan")
+                        return std::make_pair(std::make_optional<Token>(TokenType::SCAN, str, pos, currentPos()),std::optional<CompilationError>());
                     else
                         return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()),std::optional<CompilationError>());
                 }
@@ -271,7 +409,14 @@ namespace miniplc0 {
                             std::make_optional<Token>(TokenType::MULTIPLICATION_SIGN, '*', pos, currentPos()),
                             std::optional<CompilationError>());
                 }
+                //= 和==
                 case EQUAL_SIGN_STATE: {
+                    /*
+                     * 增加了对 ==的判断
+                     */
+                    if(ch == '=')
+                        std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, "==", pos, currentPos()),
+                                       std::optional<CompilationError>());
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::EQUAL_SIGN, '=', pos, currentPos()),
                                           std::optional<CompilationError>());
@@ -291,12 +436,55 @@ namespace miniplc0 {
                     return std::make_pair(std::make_optional<Token>(TokenType::RIGHT_BRACKET, ')', pos, currentPos()),
                                           std::optional<CompilationError>());
                 }
+                case COMMA_STATE: {
+                    unreadLast();
+                    return std::make_pair(std::make_optional<Token>(TokenType::COMMA_STATE, ',', pos, currentPos()),
+                                          std::optional<CompilationError>());
+                }
+                //>=
+                case GREATER_STATE: {
+                    if(ch=='=')
+                        return std::make_pair(std::make_optional<Token>(TokenType::GRT_EQU_SIGN, ">=", pos, currentPos()),
+                                              std::optional<CompilationError>());
+                    unreadLast();
+                    return std::make_pair(std::make_optional<Token>(TokenType::GREATER_THAN_SIGN, '>', pos, currentPos()),
+                                          std::optional<CompilationError>());
+                }
+                //<=
+                case LESS_STATE: {
+                    if(ch=='=')
+                        return std::make_pair(std::make_optional<Token>(TokenType::LES_EQU_SIGN, "<=", pos, currentPos()),
+                                              std::optional<CompilationError>());
+                    unreadLast();
+                    return std::make_pair(std::make_optional<Token>(TokenType::LESS_THAN_SIGN, '<', pos, currentPos()),
+                                          std::optional<CompilationError>());
+                }
+                //   !=
+                case LESS_STATE: {
+                    if(ch=='=')
+                        return std::make_pair(std::make_optional<Token>(TokenType::NOT_EQU_SIGN, "!=", pos, currentPos()),
+                                              std::optional<CompilationError>());
+                    //不是!= 返回错误
+                    unreadLast();
+                    return std::make_pair(std::optional<Token>(),
+                                          std::make_optional<CompilationError>(pos, ErrorCode::ErrRelationSymbol));
+                }
+                case LEFTBRACE_STATE: {
+                    unreadLast();
+                    return std::make_pair(std::make_optional<Token>(TokenType::LEFT_BRACKET, '{', pos, currentPos()),
+                                          std::optional<CompilationError>());
+                }
+                case RIGHTBRACE_STATE: {
+                    unreadLast();
+                    return std::make_pair(std::make_optional<Token>(TokenType::RIGHT_BRACKET, '}', pos, currentPos()),
+                                          std::optional<CompilationError>());
+                }
 								   // 预料之外的状态，如果执行到了这里，说明程序异常
 			default:
 				DieAndPrint("unhandled state.");
 				break;
 			}
-		}
+    }
 		// 预料之外的状态，如果执行到了这里，说明程序异常
 		return std::make_pair(std::optional<Token>(), std::optional<CompilationError>());
 	}
