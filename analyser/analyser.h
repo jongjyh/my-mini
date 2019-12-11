@@ -9,6 +9,8 @@
 #include <utility>
 #include <map>
 #include <cstdint>
+#include <vector>
+
 #include <cstddef> // for std::size_t
 
 namespace miniplc0 {
@@ -90,11 +92,16 @@ namespace miniplc0 {
 		// helper function
 		void _add(const Token&, std::map<std::string, int32_t>&);
 		// 添加变量、常量、未初始化的变量
-		void addVariable(const Token&);
+		//添加函数表 ，返回索引
+		int addFuntion(int nameindex,int level,int para);
+        void addVariable(const Token&);
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
+		//添加字面量 返回表的索引
+        int addCONST(const Token& tk);
 		// 是否被声明过
 		bool isDeclared(const std::string&);
+        bool isFunctionDeclared(const std::string&);
 		// 是否是未初始化的变量
 		bool isUninitializedVariable(const std::string&);
 		// 是否是已初始化的变量
@@ -102,7 +109,7 @@ namespace miniplc0 {
 		// 是否是常量
 		bool isConstant(const std::string&);
 		// 获得 {变量，常量} 在栈上的偏移
-		int32_t getIndex(const std::string&);
+		void getIndex(const std::string&,int level&,int index&);
 	private:
 		std::vector<Token> _tokens;
 		std::size_t _offset;
@@ -116,10 +123,22 @@ namespace miniplc0 {
 		// _consts                const a=1;
 		std::map<std::string, int32_t> _uninitialized_vars;
 		std::map<std::string, int32_t> _vars;
-		std::map<std::string, int32_t> _consts;
+        std::map<std::string, int32_t> _consts;
+		std::vector<std::pair<std::string,int>> _CONSTS;
+		std::vector<Function> _funcs;
 		// 下一个 token 在栈的偏移
 		int32_t _nextTokenIndex;
 
         bool InitialToken(std::string &str);
+    };
+	class Function
+    {
+    public:
+        Function(int nameindex,int para,int level) : _nameindex(nameindex), _para(para),_level(level) {}
+    public:
+	    int nameindex;
+	    int para;
+	    int level;
+
     };
 }

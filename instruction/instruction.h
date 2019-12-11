@@ -7,14 +7,22 @@ namespace miniplc0 {
 
 	enum Operation {
 		ILL = 0,
-		LIT,
-		LOD,
-		STO,
-		ADD,
-		SUB,
-		MUL,
-		DIV,
-		WRT
+		LOADA,//（读地址）loada 0, 0 # 加载fun栈帧（作用域层次差为0的栈帧）中相对于BP偏移为0的内存的地址入栈
+		LOADC,
+		IPUSH,//压入一个int入栈
+		ILOAD,//# （从地址中取值）弹出栈顶的地址值，从该地址加载一个int值，压栈该int值
+		ISTORE,//address(1), value(1)将值value存入内存地址address处。
+		IADD,
+		ISUB,
+		IMUL,
+		INEG,
+		IDIV,
+		CMP,
+		CALL,
+		RET,
+		IRET,
+		IPRINT,
+		ISCAN
 	};
 	
 	class Instruction final {
@@ -24,23 +32,26 @@ namespace miniplc0 {
 		friend void swap(Instruction& lhs, Instruction& rhs);
 	public:
 		Instruction(Operation opr, int32_t x) : _opr(opr), _x(x) {}
-		
+        Instruction(Operation opr, int32_t x,int32_t y) : _opr(opr), _x(x),_y(y) {}
 		Instruction() : Instruction(Operation::ILL, 0){}
-		Instruction(const Instruction& i) { _opr = i._opr; _x = i._x; }
+		Instruction(const Instruction& i) { _opr = i._opr; _x = i._x;_y=i._y }
 		Instruction(Instruction&& i) :Instruction() { swap(*this, i); }
 		Instruction& operator=(Instruction i) { swap(*this, i); return *this; }
-		bool operator==(const Instruction& i) const { return _opr == i._opr && _x == i._x; }
+		bool operator==(const Instruction& i) const { return _opr == i._opr && _x == i._x&& _y == i._y; }
 
 		Operation GetOperation() const { return _opr; }
 		int32_t GetX() const { return _x; }
+        int32_t GetY() const { return _y; }
 	private:
 		Operation _opr;
 		int32_t _x;
+        int32_t _y;
 	};
 
 	inline void swap(Instruction& lhs, Instruction& rhs) {
 		using std::swap;
 		swap(lhs._opr, rhs._opr);
 		swap(lhs._x, rhs._x);
+        swap(lhs._y, rhs._y);
 	}
 }
