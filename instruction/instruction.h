@@ -17,12 +17,13 @@ namespace miniplc0 {
 		IMUL,
 		INEG,
 		IDIV,
-		CMP,
+		ICMP,
 		CALL,
 		RET,
 		IRET,
 		IPRINT,
-		ISCAN
+		ISCAN,
+		POP
 	};
 	
 	class Instruction final {

@@ -10,7 +10,7 @@
 #include <map>
 #include <cstdint>
 #include <vector>
-
+#include <stack>
 #include <cstddef> // for std::size_t
 
 namespace miniplc0 {
@@ -90,26 +90,39 @@ namespace miniplc0 {
 		// 下面是符号表相关操作
 
 		// helper function
-		void _add(const Token&, std::map<std::string, int32_t>&);
+		void _add(const Token&, std::vector<std::pair<std::string,int32_t>>& sk);
+        int32_t _find(const std::string& ,std::vector<std::pair<std::string,int32_t>>& );
+        int32_t _findLocal(const std::string& );
+        int32_t _findGlobal(const std::string& );
 		// 添加变量、常量、未初始化的变量
 		//添加函数表 ，返回索引
-		int addFuntion(int nameindex,int level,int para);
+        void Analyser::addFuntion(std::string name,int level,int para)
         void addVariable(const Token&);
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
 		//添加字面量 返回表的索引
         int addCONST(const Token& tk);
 		// 是否被声明过
-		bool isDeclared(const std::string&);
-        bool isFunctionDeclared(const std::string&);
+		bool isDeclared(const std::string& );
+        bool isFunctionDeclared(const std::string& );
 		// 是否是未初始化的变量
-		bool isUninitializedVariable(const std::string&);
+		bool isUninitializedVariable(const std::string& );
 		// 是否是已初始化的变量
-		bool isInitializedVariable(const std::string&);
+		bool isInitializedVariable(const std::string& );
 		// 是否是常量
-		bool isConstant(const std::string&);
-		// 获得 {变量，常量} 在栈上的偏移
-		void getIndex(const std::string&,int level&,int index&);
+		bool isConstant(const std::string& s);
+
+		void getConstIndex(const std::string& s,int &index);
+        void getFuncIndex(const std::string& s,int &index);
+
+        //符号表管理
+        void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++
+        void popCurrentLevel();//top=pre ,pre=prepre
+        void loadOne(const string& s);//top++
+        pair<int32_t,int32_t>  getIndex(const std::string&);
+        // 获得 {变量，常量} 在栈上的偏移
+
+
 	private:
 		std::vector<Token> _tokens;
 		std::size_t _offset;
@@ -121,15 +134,26 @@ namespace miniplc0 {
 		// _uninitialized_vars    int a;
 		// _vars                  int a=1;
 		// _consts                const a=1;
+		/*
 		std::map<std::string, int32_t> _uninitialized_vars;
 		std::map<std::string, int32_t> _vars;
         std::map<std::string, int32_t> _consts;
+        */
+        std::map<std::string, int32_t> _function;
+        std::map<std::string, int32_t> _constant;
 		std::vector<std::pair<std::string,int>> _CONSTS;
 		std::vector<Function> _funcs;
 		// 下一个 token 在栈的偏移
 		int32_t _nextTokenIndex;
-
+        int32_t _nextFuncIndex;
+        int32_t _nextConstIndex;
         bool InitialToken(std::string &str);
+        std::vector<std::pair<std::string,int32_t>> _var;
+        std::vector<std::pair<std::string,int32_t>> _unit_var;
+        std::vector<std::pair<std::string,int32_t>> _const;
+        std::vector<std::pair<std::string,int32_t>>::iterator Vbp;
+        std::vector<std::pair<std::string,int32_t>>::iterator Ubp;
+        std::vector<std::pair<std::string,int32_t>>::iterator Cbp;
     };
 	class Function
     {
