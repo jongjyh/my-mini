@@ -154,8 +154,8 @@ namespace fmt {
 			case miniplc0::NULL_TOKEN:
 				name = "NullToken";
 				break;
-			case miniplc0::UNSIGNED_INTEGER:
-				name = "UnsignedInteger";
+			case miniplc0::INT:
+				name = "Integer";
 				break;
 			case miniplc0::IDENTIFIER:
 				name = "Identifier";
@@ -218,30 +218,70 @@ namespace fmt {
 			case miniplc0::ILL:
 				name = "ILL";
 				break;
-			case miniplc0::ADD:
-				name = "ADD";
+			case miniplc0::LOADA:
+				name = "loada";
 				break;
-			case miniplc0::SUB:
-				name = "SUB";
+			case miniplc0::LOADC:
+				name = "loadc";
 				break;
-			case miniplc0::MUL:
-				name = "MUL";
+			case miniplc0::IPUSH:
+				name = "ipush";
 				break;
-			case miniplc0::DIV:
-				name = "DIV";
+			case miniplc0::ILOAD:
+				name = "iload";
 				break;
-			case miniplc0::WRT:
-				name = "WRT";
+			case miniplc0::ISTORE:
+				name = "istore";
 				break;
-			case miniplc0::LIT:
-				name = "LIT";
+			case miniplc0::IADD:
+				name = "iadd";
 				break;
-			case miniplc0::LOD:
-				name = "LOD";
+			case miniplc0::ISUB:
+				name = "isub";
 				break;
-			case miniplc0::STO:
-				name = "STO";
+			case miniplc0::IMUL:
+				name = "imul";
 				break;
+            case miniplc0::INEG:
+                name = "ineg";
+                break;
+            case miniplc0::IDIV:
+                name = "idiv";
+                break;
+            case miniplc0::ICMP:
+                name = "icmp";
+                break;
+            case miniplc0::CALL:
+                name = "call";
+                break;
+            case miniplc0::RET:
+                name = "ret";
+                break;
+            case miniplc0::IRET:
+                name = "iret";
+                break;
+            case miniplc0::IPRINT:
+                name = "iprint";
+                break;
+            case miniplc0::ISCAN:
+                name = "iscan";
+                break;
+            case miniplc0::POPN:
+                name = "popn";
+                break;
+             case miniplc0::POP:
+                 name = "pop";
+                 break;
+             case miniplc0::JE:
+                 name = "je";
+                 break;
+             case miniplc0::JNE:
+                 name = "jne";
+                 break;
+             case miniplc0::JMP:
+                 name = "jmp";
+                 break;
+
 			}
 			return format_to(ctx.out(), name);
 		}
@@ -256,17 +296,29 @@ namespace fmt {
 			std::string name;
 			switch (p.GetOperation())
 			{
-			case miniplc0::ILL:
-			case miniplc0::ADD:
-			case miniplc0::SUB:
-			case miniplc0::MUL:
-			case miniplc0::DIV:
-			case miniplc0::WRT:
+			case miniplc0::ILOAD:
+			case miniplc0::ISTORE:
+			case miniplc0::IADD:
+			case miniplc0::ISUB:
+			case miniplc0::IMUL:
+            case miniplc0::INEG:
+            case miniplc0::IDIV:
+            case miniplc0::RET:
+            case miniplc0::IRET:
+            case miniplc0::IPRINT:
+            case miniplc0::ISCAN:
+            case miniplc0::POP:
+            case miniplc0::JE:
+            case miniplc0::JNE:
+            case miniplc0::JMP:
 				return format_to(ctx.out(), "{}", p.GetOperation());
-			case miniplc0::LIT:
-			case miniplc0::LOD:
-			case miniplc0::STO:
-				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());
+			case miniplc0::CALL:
+			case miniplc0::POPN:
+			case miniplc0::LOADC:
+            case miniplc0::IPUSH:
+				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());\
+			case miniplc0::LOADA:
+                return format_to(ctx.out(), "{} {} {}", p.GetOperation(), p.GetX(),p.GetY());
 			}
 			return format_to(ctx.out(), "ILL");
 		}

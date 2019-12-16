@@ -173,7 +173,7 @@ namespace miniplc0 {
                     return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrLeadingZero));
 			    //不是数字则直接返回0这个数字
 			    unreadLast();
-                return std::make_pair(std::make_optional<Token>(TokenType::DECIMAL, 0, pos, currentPos()), std::optional<CompilationError>());
+                return std::make_pair(std::make_optional<Token>(TokenType::INTEGER, 0, pos, currentPos()), std::optional<CompilationError>());
 			}
 			// 十六进制状态
 			case HEXADECIMAL_STATE:{
@@ -190,7 +190,7 @@ namespace miniplc0 {
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
                     int num = container;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::HEXADECIMAL, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
 
@@ -217,7 +217,7 @@ namespace miniplc0 {
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
                     int32_t  num=container;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::HEXADECIMAL, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INTEGER, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
                 break;
@@ -238,7 +238,7 @@ namespace miniplc0 {
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
                     int num = container;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INTEGER, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
                 // 获取读到的字符的值，注意auto推导出的类型是char

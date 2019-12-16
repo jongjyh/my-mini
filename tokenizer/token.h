@@ -10,8 +10,7 @@ namespace miniplc0 {
 
 	enum TokenType {
 		NULL_TOKEN,
-        HEXADECIMAL,//十六进制
-        DECIMAL,//十进制
+        INTEGER,
 		FLOATING,
 		IDENTIFIER,
 

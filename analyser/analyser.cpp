@@ -975,7 +975,7 @@ namespace miniplc0 {
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
                 break;
             }
-		    case TokenType::INT: {
+		    case TokenType::INTEGER: {
                 int32_t num;
                 num = std::any_cast<int>(next.value().GetValue());
                 //进常量表
@@ -1060,7 +1060,7 @@ namespace miniplc0 {
             _CONSTS.push_back(make_pair(str,1));
             _constant[str]=_CONSTS.size()-1;
         }
-        else if(tk.GetType()==INT)
+        else if(tk.GetType()==INTEGER)
         {
             int32_t num;
             num = std::any_cast<int>(tk.GetValue());
