@@ -14,7 +14,16 @@
 #include <cstddef> // for std::size_t
 
 namespace miniplc0 {
+    class Function
+    {
+    public:
+        Function(int nameindex,int para,int level) : _nameindex(nameindex), _para(para),_level(level) {}
+    public:
+        int nameindex;
+        int para;
+        int level;
 
+    };
 	class Analyser final {
 	private:
 		using uint64_t = std::uint64_t;
@@ -41,13 +50,12 @@ namespace miniplc0 {
 		// <变量声明>
 		std::optional<CompilationError> analyseVariableDeclaration();
 		// 函数声名
-        std::optional<CompilationError> analyseFunctionDeclaration()
+        std::optional<CompilationError> analyseFunctionDeclaration();
 		// <语句序列>
 		std::optional<CompilationError> analyseStatementSequence();
         // <单语句>
         std::optional<CompilationError> analyseStatement();
         //复合语句
-        std::optional<CompilationError> Analyser::analyseCompoundStatement()
         //<参数列表>
         std::optional<CompilationError> analyseParameterClause();
 		// <表达式>
@@ -94,7 +102,7 @@ namespace miniplc0 {
         int32_t _findGlobal(const std::string& );
 		// 添加变量、常量、未初始化的变量
 		//添加函数表 ，返回索引
-        void Analyser::addFuntion(std::string name,int level,int para);
+        void addFuntion(std::string name,int level,int para);
         void addVariable(const Token&);
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
@@ -116,7 +124,7 @@ namespace miniplc0 {
         //符号表管理
         void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++
         void popCurrentLevel();//top=pre ,pre=prepre
-        void loadOne(const string& s);//top++
+        void loadOne(const std::string& s);//top++
         pair<int32_t,int32_t>  getIndex(const std::string&);
         // 获得 {变量，常量} 在栈上的偏移
 
@@ -154,14 +162,5 @@ namespace miniplc0 {
         std::vector<std::pair<std::string,int32_t>>::iterator Ubp;
         std::vector<std::pair<std::string,int32_t>>::iterator Cbp;
     };
-	class Function
-    {
-    public:
-        Function(int nameindex,int para,int level) : _nameindex(nameindex), _para(para),_level(level) {}
-    public:
-	    int nameindex;
-	    int para;
-	    int level;
 
-    };
 }

@@ -39,7 +39,7 @@ namespace miniplc0 {
 		Instruction(Operation opr, int32_t x) : _opr(opr), _x(x) {}
         Instruction(Operation opr, int32_t x,int32_t y) : _opr(opr), _x(x),_y(y) {}
 		Instruction() : Instruction(Operation::ILL, 0){}
-		Instruction(const Instruction& i) { _opr = i._opr; _x = i._x;_y=i._y }
+		Instruction(const Instruction& i) { _opr = i._opr; _x = i._x;_y=i._y ;}
 		Instruction(Instruction&& i) :Instruction() { swap(*this, i); }
 		Instruction& operator=(Instruction i) { swap(*this, i); return *this; }
 		bool operator==(const Instruction& i) const { return _opr == i._opr && _x == i._x&& _y == i._y; }
