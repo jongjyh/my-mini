@@ -27,6 +27,7 @@ void Tokenize(std::istream& input, std::ostream& output) {
 
 void Analyse(std::istream& input, std::ostream& output){
 	auto tks = _tokenize(input);
+
 	miniplc0::Analyser analyser(tks);
 	auto p = analyser.Analyse();
 	if (p.second.has_value()) {
@@ -34,6 +35,7 @@ void Analyse(std::istream& input, std::ostream& output){
 		exit(2);
 	}
 	auto v = p.first;
+    output << fmt::format(".constants:\n");
 	for (auto& it : v)
 		output << fmt::format("{}\n", it);
 	return;

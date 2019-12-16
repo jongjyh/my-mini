@@ -23,8 +23,11 @@ namespace miniplc0 {
 		using int32_t = std::int32_t;
 	public:
 		Analyser(std::vector<Token> v)
-			: _tokens(std::move(v)), _offset(0), _instructions({}), _current_pos(0, 0),
-			_uninitialized_vars({}), _vars({}), _consts({}), _nextTokenIndex(0) {}
+			: _tokens(std::move(v)), _offset(0), _instructions({}),_program({}), _current_pos(0, 0),
+			_function({}),_constant({}),_CONSTS({}),_funcs({}),
+			_unit_var({}), _var({}), _const({}),
+			_nextTokenIndex(0),_nextConstIndex(0),_nextFuncIndex(0)
+			{}
 		Analyser(Analyser&&) = delete;
 		Analyser(const Analyser&) = delete;
 		Analyser& operator=(Analyser) = delete;
