@@ -20,7 +20,12 @@ namespace miniplc0 {
 	    auto err = analyseVariableDeclaration();
         if (err.has_value())
             return err;
-        auto err = analyseFunctionDeclaration();
+        //全局变量的帧尾得到确定
+        Cbp=_constant.end();
+        Vbp=_var.end();
+        Ubp=_unit_var.end();
+
+         err = analyseFunctionDeclaration();
         if (err.has_value())
             return err;
 
@@ -44,7 +49,7 @@ namespace miniplc0 {
         _nextTokenIndex=0;
         isret=true;
         _program.emplace_back(_instructions);
-        _instructions=new std::vector<Instruction>;
+        _instructions.empty();
         //新的函数
         if (!next.has_value()||
             (next.value().GetType() != TokenType::VOID&&
@@ -71,12 +76,12 @@ namespace miniplc0 {
         if(isFunctionDeclared(str))
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
         //函数名加入常量表，记录常量表中的index
-        int nameindex=addCONST(next);
+        addCONST(next);
 
         /*
          * 相当于进入一个新的块
          */
-        loadNewLevel();
+
 
         //<parameter-clause>
         auto err=analyseParameterClause();
@@ -140,9 +145,9 @@ namespace miniplc0 {
              * 处理参数声明,此处不需要指令因为call时会自己载入。
              */
             if(isconst== false)
-                addVariable(str);
+                addVariable(next);
             else
-                addConstant(str);
+                addConstant(next);
             //‘,’ 存在则继续读，不是,就退出
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::COMMA)
@@ -241,9 +246,9 @@ namespace miniplc0 {
                      * 声名一个初始化变量
                      */
                     if(isconst==true)
-                        addConstant(str);
+                        addConstant(var);
                     else
-                        addVariable(str);
+                        addVariable(var);
                     continue;
                 }
                 // ','
@@ -251,7 +256,7 @@ namespace miniplc0 {
                     /*
                      * 声名一个未初始化变量，初始化为0
                      */
-                    addUninitializedVariable(str);
+                    addUninitializedVariable(var);
                     _instructions.emplace_back(Operation::IPUSH,0);
                     insindex+=5;
                     continue;
@@ -286,11 +291,11 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
         // <statement-seq>
-        auto err=analyseStatementSequence();
+        err=analyseStatementSequence();
         if (err.has_value())
             return err;
         // '}'
-        auto next=nextToken();
+        next=nextToken();
         if(!next.has_value()||next.value().GetType()!=RIGHT_BRACE)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBrace);
 
@@ -335,43 +340,43 @@ namespace miniplc0 {
                     nextToken();
                     break;
                 case LEFT_BRACE:
-                    auto err=analyseCompoundStatement();
+                     err=analyseCompoundStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case IF:
-                    auto err=analyseConditionStatement();
+                     err=analyseConditionStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case WHILE:
-                    auto err=analyseLoopStatement();
+                     err=analyseLoopStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case PRINT:
-                    auto err=analysePrintStatement();
+                     err=analysePrintStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case SCAN:
-                    auto err=analyseScanStatement();
+                     err=analyseScanStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case IDENTIFIER:
-                    auto err=analyseAssignmentStatement();
+                     err=analyseAssignmentStatement();
                     if (err.has_value())
                         return err;
                     break;
                 case VOID:
                 case INT:
-                    auto err=analyseFunctionCall();
+                     err=analyseFunctionCall();
                     if (err.has_value())
                         return err;
                     break;
                 case RETURN:
-                    auto err=analyseReturnStatement();
+                     err=analyseReturnStatement();
                     if (err.has_value())
                         return err;
                     break;
@@ -417,43 +422,43 @@ namespace miniplc0 {
                 nextToken();
                 break;
             case LEFT_BRACE:
-                auto err=analyseCompoundStatement();
+                 err=analyseCompoundStatement();
                 if (err.has_value())
                     return err;
                 break;
             case IF:
-                auto err=analyseConditionStatement();
+                 err=analyseConditionStatement();
                 if (err.has_value())
                     return err;
                 break;
             case WHILE:
-                auto err=analyseLoopStatement();
+                 err=analyseLoopStatement();
                 if (err.has_value())
                     return err;
                 break;
             case PRINT:
-                auto err=analysePrintStatement();
+                 err=analysePrintStatement();
                 if (err.has_value())
                     return err;
                 break;
             case SCAN:
-                auto err=analyseScanStatement();
+                 err=analyseScanStatement();
                 if (err.has_value())
                     return err;
                 break;
             case IDENTIFIER:
-                auto err=analyseAssignmentStatement();
+                 err=analyseAssignmentStatement();
                 if (err.has_value())
                     return err;
                 break;
             case VOID:
             case INT:
-                auto err=analyseFunctionCall();
+                 err=analyseFunctionCall();
                 if (err.has_value())
                     return err;
                 break;
             case RETURN:
-                auto err=analyseReturnStatement();
+                 err=analyseReturnStatement();
                 if (err.has_value())
                     return err;
                 break;
@@ -481,7 +486,7 @@ namespace miniplc0 {
                  next.value().GetType() != GRT_EQU_SIGN &&
                  next.value().GetType() != LES_EQU_SIGN &&
                  next.value().GetType() != IS_EQU_SIGN &&
-                 next.value().GetType() != NOT_EQU_SIGN && )) {
+                 next.value().GetType() != NOT_EQU_SIGN  )) {
                 unreadToken();
                 return {};
             }
@@ -559,7 +564,7 @@ namespace miniplc0 {
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //statement
-        auto err=analyseStatement();
+         err=analyseStatement();
         if (err.has_value())
             return err;
         //'else'
@@ -572,7 +577,7 @@ namespace miniplc0 {
         //statement
         _instructions[s1].SetX(insindex);
         //回填地址
-        auto err=analyseStatement();
+        err=analyseStatement();
         if (err.has_value())
             return err;
 
@@ -615,7 +620,7 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
 
         //statement
-        auto err= analyseStatement();
+       err= analyseStatement();
         if (err.has_value())
             return err;
         _instructions.emplace_back(Operation::JMP,s0);
@@ -976,32 +981,36 @@ namespace miniplc0 {
                 num = std::any_cast<int>(next.value().GetValue());
                 //进常量表
                 addCONST(next);
+                _instructions.emplace_back(Operation::IPUSH, num);
+                insindex+=5;
                 break;
                 //数字直接入栈
             }
             case TokenType::IDENTIFIER:{
                         std::string str =next.value().GetValueString();
-                        if(!isDeclared(str))
+                        //先看是否是变量
+                        if(isDeclared(str)) {
+                            if (isUninitializedVariable(str))
+                                return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
+                            int index, level;
+                            getIndex(str, &index, &level);
+                            _instructions.emplace_back(Operation::LOADA, level, index);//7
+                            _instructions.emplace_back(Operation::ILOAD, 0);//1
+                            insindex += 8;
+                            //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
+                        }
+                        //函数调用
+                        else if(isFunctionDeclared(str))
+                        {
+                            auto err=analyseFunctionCall();
+                            if (err.has_value())
+                                return err;
+                            break;
+                        }
+                        else
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
-
-                        if(isUninitializedVariable(str))
-                            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
-                        int index,level;
-                        getIndex(str,&index,&level);
-                        _instructions.emplace_back(Operation::LOADA, level,index);//7
-                        _instructions.emplace_back(Operation::ILOAD, 0);//1
-                        insindex+=8;
-                        //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
                         break;
                 }
-                case TokenType ::{
-                /*
-                 * 函数call
-                 */
-                auto err=analyseFunctionCall();
-                if (err.has_value())
-                    return err;
-                break;
             }
 			// 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
 			// 但是要注意 default 返回的是一个编译错误
@@ -1192,10 +1201,7 @@ namespace miniplc0 {
 	    _var.erase(Vbp,_var.end());
         _const.erase(Cbp,_const.end());
         _unit_var.erase(Ubp,_unit_var.end());
-        //暂时先如下设定。
-        Vpre=_var.begin();
-        Upre=_unit_var.begin();
-        Cpre=_const.begin();
+
     }
 
 }

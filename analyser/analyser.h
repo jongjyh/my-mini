@@ -17,7 +17,7 @@ namespace miniplc0 {
     class Function
     {
     public:
-        Function(int nameindex,int para,int level) : _nameindex(nameindex), _para(para),_level(level) {}
+        Function(int nameindex,int para,int level) : nameindex(nameindex), para(para),level(level) {}
     public:
         int nameindex;
         int para;
@@ -42,7 +42,7 @@ namespace miniplc0 {
 		Analyser& operator=(Analyser) = delete;
 
 		// 唯一接口
-		std::pair<std::vector<Instruction>, std::optional<CompilationError>> Analyse();
+        std::pair<std::vector<std::vector<Instruction>>, std::optional<CompilationError>> Analyse();
 	private:
 		// 所有的递归子程序
         std::optional<CompilationError> analyseC0Program();
@@ -125,7 +125,7 @@ namespace miniplc0 {
         void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++
         void popCurrentLevel();//top=pre ,pre=prepre
         void loadOne(const std::string& s);//top++
-        pair<int32_t,int32_t>  getIndex(const std::string&);
+        std::pair<int32_t,int32_t>  getIndex(const std::string&);
         // 获得 {变量，常量} 在栈上的偏移
 
 

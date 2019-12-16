@@ -26,6 +26,7 @@ namespace miniplc0 {
 		POPN,
 		POP,
 		JE,
+		JNE,
 		JMP
 
 	};
