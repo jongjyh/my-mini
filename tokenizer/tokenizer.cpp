@@ -438,7 +438,7 @@ namespace miniplc0 {
                 }
                 case COMMA_STATE: {
                     unreadLast();
-                    return std::make_pair(std::make_optional<Token>(TokenType::COMMA_STATE, ',', pos, currentPos()),
+                    return std::make_pair(std::make_optional<Token>(TokenType::COMMA, ',', pos, currentPos()),
                                           std::optional<CompilationError>());
                 }
                 //>=
