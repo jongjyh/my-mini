@@ -50,6 +50,7 @@ namespace miniplc0 {
         ErrIncompletePrintStatement,
         ErrVariableCall,//变量当函数调用
         ErrReturn,//fanhuicuowu
+        ErrIncompleteWhileStatement
 	};
 
 	class CompilationError final{

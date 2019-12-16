@@ -10,7 +10,7 @@ namespace miniplc0 {
 	std::pair<std::vector<std::vector<Instruction>>, std::optional<CompilationError>> Analyser::Analyse() {
 		auto err = analyseC0Program();
 		if (err.has_value())
-			return std::make_pair(std::vector<std::vector<Instruction>>, err);
+			return std::make_pair(std::vector<std::vector<Instruction>>(), err);
 		else
 			return std::make_pair(_program, std::optional<CompilationError>());
 	}
@@ -21,7 +21,7 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
         //全局变量的帧尾得到确定
-        Cbp=_constant.end();
+        Cbp=_const.end();
         Vbp=_var.end();
         Ubp=_unit_var.end();
 
@@ -733,7 +733,7 @@ namespace miniplc0 {
         //函数是否被声明过
         if(!isFunctionDeclared(str))
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
-        int index=getFunctionIndex(str);
+        int index=getFuncIndex(str);
         //'('
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=LEFT_BRACKET)
@@ -976,7 +976,7 @@ namespace miniplc0 {
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
                 break;
             }
-		    case TokenType::UNSIGNED_INTEGER: {
+		    case TokenType::INT: {
                 int32_t num;
                 num = std::any_cast<int>(next.value().GetValue());
                 //进常量表
@@ -992,8 +992,8 @@ namespace miniplc0 {
                         if(isDeclared(str)) {
                             if (isUninitializedVariable(str))
                                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
-                            int index, level;
-                            getIndex(str, &index, &level);
+                            std::pair<int32_t,int32_t> p=getIndex(str);
+                            int index=p.first, level=p.second;
                             _instructions.emplace_back(Operation::LOADA, level, index);//7
                             _instructions.emplace_back(Operation::ILOAD, 0);//1
                             insindex += 8;
@@ -1016,7 +1016,7 @@ namespace miniplc0 {
 			// 但是要注意 default 返回的是一个编译错误
 		default:
 			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
-		}
+
 
 		// 取负
 		if (prefix == -1)
@@ -1027,7 +1027,7 @@ namespace miniplc0 {
 		return {};
 	}
 
-	std::optional<Token> Analyser::nextToken() {
+	std::optional<miniplc0::Token> Analyser::nextToken() {
         if (_offset == _tokens.size())
             return {};
         // 考虑到 _tokens[0..._offset-1] 已经被分析过了
@@ -1161,7 +1161,7 @@ namespace miniplc0 {
         return -1;
     }
 
-    pair<int32_t,int32_t> Analyser::getIndex(const std::string& s) {
+    std::pair<int32_t,int32_t> Analyser::getIndex(const std::string& s) {
 	    std::pair<int32_t ,int32_t > p(-1,-1);
 	    //先找局部变量
 	    int index=-1;

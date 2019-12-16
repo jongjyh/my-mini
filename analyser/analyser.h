@@ -107,7 +107,7 @@ namespace miniplc0 {
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
 		//添加字面量 返回表的索引
-        int addCONST(const Token& tk);
+        void addCONST(const Token& tk);
 		// 是否被声明过
 		bool isDeclared(const std::string& );
         bool isFunctionDeclared(const std::string& );
