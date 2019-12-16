@@ -75,8 +75,9 @@ namespace miniplc0 {
         std::string str = next.value().GetValueString();
         if(isFunctionDeclared(str))
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
+        Token fun=next;
         //函数名加入常量表，记录常量表中的index
-        addCONST(next);
+        addCONST(fun);
 
         /*
          * 相当于进入一个新的块
@@ -140,14 +141,14 @@ namespace miniplc0 {
             std::string str = next.value().GetValueString();
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
-
+            Token var=next;
             /*
              * 处理参数声明,此处不需要指令因为call时会自己载入。
              */
             if(isconst== false)
-                addVariable(next);
+                addVariable(var);
             else
-                addConstant(next);
+                addConstant(var);
             //‘,’ 存在则继续读，不是,就退出
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::COMMA)
@@ -1015,8 +1016,7 @@ namespace miniplc0 {
             }
 			// 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
 			// 但是要注意 default 返回的是一个编译错误
-		default:
-			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrIncompleteExpression);
+
 
 
 		// 取负
@@ -1065,7 +1065,7 @@ namespace miniplc0 {
         else if(tk.GetType()==INT)
         {
             int32_t num;
-            num = std::any_cast<int>(tk.value().GetValue());
+            num = std::any_cast<int>(tk.GetValue());
             std:: string str=std::to_string(num);
             _CONSTS.push_back(make_pair(str,0));
             _constant[str]=_CONSTS.size()-1;
