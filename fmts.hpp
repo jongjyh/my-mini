@@ -102,7 +102,7 @@ namespace fmt {
             case miniplc0::ErrIncompletePrintStatement:
                 name = "Incomplete PrintStatement!";
                 break;
-            case miniplc0:ErrVariableCall://变量当函数调用
+            case miniplc0::ErrVariableCall://变量当函数调用
                 name = "It should be a var but you used it like function.";
                 break;
             case miniplc0::ErrReturn://fanhuicuowu
@@ -175,43 +175,43 @@ namespace fmt {
 			case miniplc0::CONST:
 				name = "Const";
 				break;
-			case IF:
+			case miniplc0::IF:
                 name = "if";
                 break;
-			case ELSE:
+			case miniplc0::ELSE:
                 name = "else";
                 break;
-			case SWITCH:
+			case miniplc0::SWITCH:
                 name = "switch";
                 break;
-			case CASE:
+			case miniplc0::CASE:
                 name = "case";
                 break;
-			case DEFAULT:
+			case miniplc0::DEFAULT:
                 name = "default";
                 break;
-			case WHILE:
+			case miniplc0::WHILE:
                 name = "while";
                 break;
-			case FOR:
+			case miniplc0::FOR:
                 name = "for";
                 break;
-			case DO:
+			case miniplc0::DO:
                 name = "do";
                 break;
-			case RETURN:
+			case miniplc0::RETURN:
                 name = "return";
                 break;
-			case BREAK:
+			case miniplc0::BREAK:
                 name = "break";
                 break;
-			case CONTINUE:
+			case miniplc0::CONTINUE:
                 name = "continue";
                 break;
-			case PRINT:
+			case miniplc0::PRINT:
                 name = "print";
                 break;
-			case SCAN:
+			case miniplc0::SCAN:
                 name = "scan";
                 break;
 
