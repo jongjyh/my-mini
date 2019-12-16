@@ -53,6 +53,7 @@ namespace miniplc0 {
 			// 2. 只有在可能会转移的状态读入一个 char
 			// 因为我们实现了 unread，为了省事我们选择第一种
 			auto current_char = nextChar();
+            auto ch = current_char.value();
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
@@ -182,7 +183,7 @@ namespace miniplc0 {
                 {
                     long long  container;
 
-                    sscanf(ss.str.c_str(), "%x", &container);
+                    sscanf(ss.str().c_str(), "%x", &container);
 
                     if(container > 2147483647 )
                         return std::make_pair(std::optional<Token>(),
@@ -210,7 +211,7 @@ namespace miniplc0 {
                     unreadLast();
                     long long  container;
 
-                    sscanf(ss.str.c_str(), "%x", &container);
+                    sscanf(ss.str().c_str(), "%x", &container);
                     if(container > 2147483647 )
                         return std::make_pair(std::optional<Token>(),
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
@@ -237,7 +238,7 @@ namespace miniplc0 {
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
                     int num = container;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::UNSIGNED_INTEGER, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
                 // 获取读到的字符的值，注意auto推导出的类型是char
@@ -268,7 +269,7 @@ namespace miniplc0 {
                     stream << container;
                     stream >> num;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::UNSIGNED_INTEGER, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
                 //     解析成功则返回无符号整数类型的token，否则返回编译错误
