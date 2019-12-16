@@ -1,5 +1,5 @@
 .vs
 CMakeSettings.json
-
+analyser/parser.cpp
 !CMakeLists.txt
 build

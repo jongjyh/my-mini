@@ -135,7 +135,6 @@ namespace miniplc0 {
                 next.value().GetType() != TokenType::VOID&&
                 next.value().GetType() != TokenType::INT))
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidParameterDeclaration);
-            TokenType  type=next.value().GetType();
             //<identifier>
             next = nextToken();
             std::string str = next.value().GetValueString();
@@ -201,7 +200,6 @@ namespace miniplc0 {
             next.value().GetType() != TokenType::VOID&&
             next.value().GetType() != TokenType::INT))
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
-            TokenType  type=next.value().GetType();
 
             //<init-declarator-list> ::=
             //    <init-declarator>{','<init-declarator>}

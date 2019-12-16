@@ -69,6 +69,48 @@ namespace fmt {
 			case miniplc0::ErrInvalidPrint:
 				name = "The output statement is invalid.";
 				break;
+			case miniplc0::ErrRelationSymbol:
+                name = "The output statement is invalid.";
+                break;
+			case miniplc0::ErrLeadingZero:
+                name = "can't not have leading Zero.";
+                break;
+            case miniplc0::ErrFuctionBracket:
+                name = "Function bracket() can't not match";
+                break;
+            case miniplc0::ErrInvalidParameterDeclaration:
+                name = "Invalid Parameter Declaration";
+                break;
+            case miniplc0::ErrFuctionBrace:
+                name = "Function brace{} can't not fetch";
+                break;
+            case miniplc0::ErrIncompleteConditionStatement:
+                name = "Incomplete ConditionStatement!";
+                break;
+            case miniplc0::ErrNoBracket:
+                name = "Your bracket can't not match";
+                break;
+            case miniplc0::ErrinvalidStatement:
+                name = "Incomplete ConditionStatement!";
+                break;
+            case miniplc0::ErrIncompleteScanStatement:
+                name = "Incomplete ScanStatement!";
+                break;
+            case miniplc0::ErrIncompleteReturnStatement:
+                name = "Incomplete ReturnStatement!";
+                break;
+            case miniplc0::ErrIncompletePrintStatement:
+                name = "Incomplete PrintStatement!";
+                break;
+            case miniplc0:ErrVariableCall://变量当函数调用
+                name = "It should be a var but you used it like function.";
+                break;
+            case miniplc0::ErrReturn://fanhuicuowu
+                name = "Wrong return type.";
+                break;
+            case miniplc0::ErrIncompleteWhileStatement:
+                name = "Incomplete WhileStatement!";
+                break;
 			}
 			return format_to(ctx.out(), name);
 		}
