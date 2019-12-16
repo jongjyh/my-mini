@@ -75,7 +75,7 @@ namespace miniplc0 {
         std::string str = next.value().GetValueString();
         if(isFunctionDeclared(str))
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
-        Token fun=next;
+        Token fun=next.value();
         //函数名加入常量表，记录常量表中的index
         addCONST(fun);
 
@@ -141,7 +141,7 @@ namespace miniplc0 {
             std::string str = next.value().GetValueString();
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
-            Token var=next;
+            Token var=next.value();
             /*
              * 处理参数声明,此处不需要指令因为call时会自己载入。
              */
@@ -981,7 +981,7 @@ namespace miniplc0 {
                 int32_t num;
                 num = std::any_cast<int>(next.value().GetValue());
                 //进常量表
-                addCONST(next);
+                addCONST(next.value());
                 _instructions.emplace_back(Operation::IPUSH, num);
                 insindex+=5;
                 break;
