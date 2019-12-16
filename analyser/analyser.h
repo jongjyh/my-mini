@@ -119,7 +119,7 @@ namespace miniplc0 {
 		bool isConstant(const std::string& s);
 
 		void getConstIndex(const std::string& s,int &index);
-        int32_t Analyser::getFuncIndex(const std::string& );
+        int32_t getFuncIndex(const std::string& );
 
         //符号表管理
         void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++

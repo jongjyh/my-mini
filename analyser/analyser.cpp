@@ -1011,6 +1011,7 @@ namespace miniplc0 {
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
                         break;
                 }
+            default:return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrinvalidStatement);
             }
 			// 这里和 <语句序列> 类似，需要根据预读结果调用不同的子程序
 			// 但是要注意 default 返回的是一个编译错误
@@ -1064,7 +1065,7 @@ namespace miniplc0 {
         else if(tk.GetType()==INT)
         {
             int32_t num;
-            num = std::any_cast<int>(next.value().GetValue());
+            num = std::any_cast<int>(tk.value().GetValue());
             std:: string str=std::to_string(num);
             _CONSTS.push_back(make_pair(str,0));
             _constant[str]=_CONSTS.size()-1;
@@ -1086,7 +1087,7 @@ namespace miniplc0 {
 
     }
     int32_t Analyser::getFuncIndex(const std::string& s){
-        return index=_function[s];
+        return _function[s];
     }
     //变量表
 
@@ -1100,12 +1101,13 @@ namespace miniplc0 {
         return _find(s,_var)!=-1;
 	}
 	bool Analyser::isConstant(const std::string&s) {
-        return _find(s,_const)!=-1
+        return _find(s,_const)!=-1;
 	}
     //底层操作，添加，查找
     void Analyser::_add(const Token& tk, std::vector<std::pair<std::string,int32_t>>& sk) {
         if (tk.GetType() != TokenType::IDENTIFIER)
             DieAndPrint("only identifier can be added to the table.");
+        std::string s=tk.GetValueString();
         std::pair<std::string,int32_t> p(s,_nextTokenIndex);
         _nextTokenIndex++;
         sk.push_back(p);
@@ -1184,11 +1186,11 @@ namespace miniplc0 {
 
 
     //高级操作，对帧栈的操作
-    void InitStack(){
+   /* void InitStack(){
         Vpre=_var.begin();
         Upre=_unit_var.begin();
         Cpre=_const.begin();
-    }
+    }*/
     //进入一个新块。将pre指针指向当前 prepre=pre,pre=top;top++
     void Analyser::loadNewLevel(){
 	    Vbp=_var.end();
