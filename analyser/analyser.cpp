@@ -78,7 +78,6 @@ namespace miniplc0 {
         Token fun=next.value();
         //函数名加入常量表，记录常量表中的index
         addCONST(fun);
-
         /*
          * 相当于进入一个新的块
          */
@@ -980,8 +979,8 @@ namespace miniplc0 {
                 num = std::any_cast<int>(next.value().GetValue());
                 //进常量表
                 addCONST(next.value());
-                _instructions.emplace_back(Operation::IPUSH, num);
-                insindex+=5;
+                _instructions.emplace_back(Operation::LOADC, _CONSTS.size()-1);
+                insindex+=2;
                 break;
                 //数字直接入栈
             }
