@@ -460,7 +460,7 @@ namespace miniplc0 {
                                           std::optional<CompilationError>());
                 }
                 //   !=
-                case LESS_STATE: {
+                case NOT_EQU_STATE: {
                     if(ch=='=')
                         return std::make_pair(std::make_optional<Token>(TokenType::NOT_EQU_SIGN, "!=", pos, currentPos()),
                                               std::optional<CompilationError>());

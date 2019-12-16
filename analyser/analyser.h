@@ -33,11 +33,7 @@ namespace miniplc0 {
 		std::pair<std::vector<Instruction>, std::optional<CompilationError>> Analyse();
 	private:
 		// 所有的递归子程序
-
-		// <程序>
-		std::optional<CompilationError> analyseProgram();
-		// <主过程>
-		std::optional<CompilationError> analyseMain();
+        std::optional<CompilationError> analyseC0Program();
 
 		// <变量声明>
 		std::optional<CompilationError> analyseVariableDeclaration();
@@ -95,7 +91,7 @@ namespace miniplc0 {
         int32_t _findGlobal(const std::string& );
 		// 添加变量、常量、未初始化的变量
 		//添加函数表 ，返回索引
-        void Analyser::addFuntion(std::string name,int level,int para)
+        void Analyser::addFuntion(std::string name,int level,int para);
         void addVariable(const Token&);
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
@@ -126,6 +122,7 @@ namespace miniplc0 {
 		std::vector<Token> _tokens;
 		std::size_t _offset;
 		std::vector<Instruction> _instructions;
+		std::vector<std::vector<Instruction>> _program;
 		std::pair<uint64_t, uint64_t> _current_pos;
 
 		// 为了简单处理，我们直接把符号表耦合在语法分析里

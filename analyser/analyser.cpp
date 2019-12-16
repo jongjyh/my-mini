@@ -5,12 +5,14 @@
 #include<iostream>
 
 namespace miniplc0 {
-	std::pair<std::vector<Instruction>, std::optional<CompilationError>> Analyser::Analyse() {
-		auto err = analyseProgram();
+    int32_t insindex=0;
+    bool isret=true;//默认返回
+	std::pair<std::vector<std::vector<Instruction>>, std::optional<CompilationError>> Analyser::Analyse() {
+		auto err = analyseC0Program();
 		if (err.has_value())
-			return std::make_pair(std::vector<Instruction>(), err);
+			return std::make_pair(std::vector<std::vector<Instruction>>, err);
 		else
-			return std::make_pair(_instructions, std::optional<CompilationError>());
+			return std::make_pair(_program, std::optional<CompilationError>());
 	}
 	//<C0-program> ::= {<variable-declaration>}{<function-definition>}
     std::optional<CompilationError> Analyser::analyseC0Program()
@@ -38,6 +40,12 @@ namespace miniplc0 {
     {
         auto next = nextToken();
         //预读
+        insindex=0;
+        _nextTokenIndex=0;
+        isret=true;
+        _program.emplace_back(_instructions);
+        _instructions=new std::vector<Instruction>;
+        //新的函数
         if (!next.has_value()||
             (next.value().GetType() != TokenType::VOID&&
              next.value().GetType() != TokenType::INT))
@@ -47,6 +55,10 @@ namespace miniplc0 {
         }
         //<type-specifier> void or int
         auto ret=next.value().GetType();
+        if(ret==VOID)
+            isret=false;
+        else
+            isret=true;
         //<identifier>
         next = nextToken();
 
@@ -241,6 +253,7 @@ namespace miniplc0 {
                      */
                     addUninitializedVariable(str);
                     _instructions.emplace_back(Operation::IPUSH,0);
+                    insindex+=5;
                     continue;
                 }
                     unreadToken();
@@ -518,6 +531,11 @@ namespace miniplc0 {
      * 条件语句
      * <condition-statement> ::=
      * 'if' '(' <condition> ')' <statement> ['else' <statement>]
+     * je s1
+     * s0:
+     * ifstmt
+     * s1:
+     * elsestmt
      */
     std::optional<CompilationError>Analyser:: analyseConditionStatement(){
         auto next=nextToken();
@@ -531,6 +549,11 @@ namespace miniplc0 {
         auto err=analyseConditionExp();
         if (err.has_value())
             return err;
+
+        _instructions.emplace_back(Operation::JE,0);
+        insindex+=3;
+        int s1=_instructions.size()-1;
+        //s1意义如上
         //')'
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
@@ -547,6 +570,8 @@ namespace miniplc0 {
             return {};
         }
         //statement
+        _instructions[s1].SetX(insindex);
+        //回填地址
         auto err=analyseStatement();
         if (err.has_value())
             return err;
@@ -577,9 +602,13 @@ namespace miniplc0 {
         if (!next.has_value()||next.value().GetType()!=LEFT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //<condition>
+        int s0=insindex,s1;
         auto err=analyseConditionExp();
         if (err.has_value())
             return err;
+        _instructions.emplace_back(Operation::JNE,0);
+        insindex++;
+        int jne=_instructions.size()-1;
         //')'
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
@@ -589,6 +618,13 @@ namespace miniplc0 {
         auto err= analyseStatement();
         if (err.has_value())
             return err;
+        _instructions.emplace_back(Operation::JMP,s0);
+        insindex++;
+        //回填jne s1
+        s1=insindex;
+        _instructions[jne].SetX(s1);
+
+
     }
     //输出语句
     /*
@@ -610,6 +646,7 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
         _instructions.emplace_back(Operation::IPRINT,0);
+        insindex+=1;
         //,
         while(1)
         {
@@ -623,6 +660,7 @@ namespace miniplc0 {
             if (err.has_value())
                 return err;
             _instructions.emplace_back(Operation::IPRINT,0);
+            insindex+=1;
         }
 
         //')'
@@ -659,9 +697,10 @@ namespace miniplc0 {
         std::pair<int32_t ,int32_t > p=getIndex(str);
         index=p.first;
         level=p.second;
-        _instructions.emplace_back(Operation::LOADA,level,index);
-        _instructions.emplace_back(Operation::ISCAN,0);
-        _instructions.emplace_back(Operation::ISTORE,0);
+        _instructions.emplace_back(Operation::LOADA,level,index);//7
+        _instructions.emplace_back(Operation::ISCAN,0);//1
+        _instructions.emplace_back(Operation::ISTORE,0);//1
+        insindex+=9;
         //')'
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
@@ -709,6 +748,8 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
 
         _instructions.emplace_back(Operation::CALL,index);
+        insindex+=3;
+
         return {};
     }
     //返回语句
@@ -736,14 +777,17 @@ namespace miniplc0 {
         next=nextToken();
         if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
-        if(prefix==-1)
+        if(prefix==-1&&isret==false)
         {
-            _instructions.emplace_back(Operation::POP,0);
-            _instructions.emplace_back(Operation::RET,0);
+            _instructions.emplace_back(Operation::POPN,_nextTokenIndex);//5
+            _instructions.emplace_back(Operation::RET,0);//1
+            insindex+=6;
         }
-
-        else if(prefix==1)
-            _instructions.emplace_back(Operation::IRET,0);
+        else if(prefix==1&&isret==true)
+        {_instructions.emplace_back(Operation::IRET,0);
+        insindex+=1;}
+        else
+            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrReturn);
         return {};
 
     }
@@ -773,10 +817,15 @@ namespace miniplc0 {
 				return err;
 
 			// 根据结果生成指令
-			if(type==MINUS_SIGN)
-            _instructions.emplace_back(Operation::ISUB, 0);
-			else if(type==PLUS_SIGN)
+			if(type==MINUS_SIGN) {
+                _instructions.emplace_back(Operation::ISUB, 0);
+                insindex+=1;
+            }
+			else if(type==PLUS_SIGN){
                 _instructions.emplace_back(Operation::IADD, 0);
+                insindex+=1;
+			}
+
 		}
 		return {};
 	}
@@ -840,10 +889,10 @@ namespace miniplc0 {
         std::pair<int32_t ,int32_t > p=getIndex(str);
         index=p.first;
         level=p.second;
-        _instructions.emplace_back(Operation::LOADA,level,index);
-        _instructions.emplace_back(Operation::ISCAN,0);
-        _instructions.emplace_back(Operation::ISTORE,0);
-
+        _instructions.emplace_back(Operation::LOADA,level,index);//7
+        _instructions.emplace_back(Operation::ISCAN,0);//1
+        _instructions.emplace_back(Operation::ISTORE,0);//1
+        insindex+=9;
         //';'
         next=nextToken();
         if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
@@ -879,9 +928,15 @@ namespace miniplc0 {
 
             // 根据结果生成指令
             if (type == TokenType::DIVISION_SIGN)
+            {
                 _instructions.emplace_back(Operation::IDIV, 0);
+                insindex+=1;
+            }
             else if (type == TokenType::MULTIPLICATION_SIGN)
+            {
+                insindex+=1;
                 _instructions.emplace_back(Operation::IMUL, 0);
+            }
         }
 		return {};
 	}
@@ -933,8 +988,9 @@ namespace miniplc0 {
                             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotInitialized);
                         int index,level;
                         getIndex(str,&index,&level);
-                        _instructions.emplace_back(Operation::LOADA, level,index);
-                        _instructions.emplace_back(Operation::ILOAD, 0);
+                        _instructions.emplace_back(Operation::LOADA, level,index);//7
+                        _instructions.emplace_back(Operation::ILOAD, 0);//1
+                        insindex+=8;
                         //利用标识符找到常量、变量在栈中的索引，利用load指令载入identifi的值
                         break;
                 }
@@ -955,7 +1011,10 @@ namespace miniplc0 {
 
 		// 取负
 		if (prefix == -1)
-			_instructions.emplace_back(Operation::INEG, 0);
+        {
+		    _instructions.emplace_back(Operation::INEG, 0);
+            insindex+=1;
+        }
 		return {};
 	}
 

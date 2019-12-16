@@ -23,7 +23,11 @@ namespace miniplc0 {
 		IRET,
 		IPRINT,
 		ISCAN,
-		POP
+		POPN,
+		POP,
+		JE,
+		JMP
+
 	};
 	
 	class Instruction final {
@@ -43,6 +47,7 @@ namespace miniplc0 {
 		Operation GetOperation() const { return _opr; }
 		int32_t GetX() const { return _x; }
         int32_t GetY() const { return _y; }
+        void SetX(int32_t x){  _x=x;}
 	private:
 		Operation _opr;
 		int32_t _x;
@@ -55,4 +60,5 @@ namespace miniplc0 {
 		swap(lhs._x, rhs._x);
         swap(lhs._y, rhs._y);
 	}
+
 }
