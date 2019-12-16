@@ -1076,7 +1076,7 @@ namespace miniplc0 {
 
     void Analyser::addFuntion(std::string name,int level,int para){
         int nameindex;
-        getConstIndex(name,&nameindex);
+        getConstIndex(name,nameindex);
         Function f(nameindex,para,level);
         _funcs.emplace_back(f);
         _function[name]=_funcs.size()-1;
@@ -1085,9 +1085,8 @@ namespace miniplc0 {
         index=_constant[s];
 
     }
-    void Analyser::getFuncIndex(const std::string& s,int &index){
-        level=1;
-        index=_function[s];
+    int32_t Analyser::getFuncIndex(const std::string& s){
+        return index=_function[s];
     }
     //变量表
 
@@ -1095,10 +1094,10 @@ namespace miniplc0 {
 		return isConstant(s) || isUninitializedVariable(s) || isInitializedVariable(s);
 	}
 	bool Analyser::isUninitializedVariable(const std::string& s) {
-        return _find(s,_unit_var)!=-1
+        return _find(s,_unit_var)!=-1;
 	}
 	bool Analyser::isInitializedVariable(const std::string&s) {
-        return _find(s,_var)!=-1
+        return _find(s,_var)!=-1;
 	}
 	bool Analyser::isConstant(const std::string&s) {
         return _find(s,_const)!=-1
@@ -1185,7 +1184,7 @@ namespace miniplc0 {
 
 
     //高级操作，对帧栈的操作
-    void Analyser::InitStack(){
+    void InitStack(){
         Vpre=_var.begin();
         Upre=_unit_var.begin();
         Cpre=_const.begin();

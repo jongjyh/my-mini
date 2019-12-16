@@ -107,7 +107,7 @@ namespace miniplc0 {
 		void addConstant(const Token&);
 		void addUninitializedVariable(const Token&);
 		//添加字面量 返回表的索引
-        void addCONST(const Token& tk);
+        void addCONST(const Token&);
 		// 是否被声明过
 		bool isDeclared(const std::string& );
         bool isFunctionDeclared(const std::string& );
@@ -119,7 +119,7 @@ namespace miniplc0 {
 		bool isConstant(const std::string& s);
 
 		void getConstIndex(const std::string& s,int &index);
-        void getFuncIndex(const std::string& s,int &index);
+        int32_t Analyser::getFuncIndex(const std::string& );
 
         //符号表管理
         void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++
