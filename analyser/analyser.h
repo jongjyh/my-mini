@@ -57,8 +57,7 @@ namespace miniplc0 {
         std::optional<CompilationError> analyseExpressionList();
 		// <赋值语句>
 		std::optional<CompilationError> analyseAssignmentStatement();
-		// <输出语句>
-		std::optional<CompilationError> analyseOutputStatement();
+
 		// <项>
 		std::optional<CompilationError> analyseItem();
 		// <因子>

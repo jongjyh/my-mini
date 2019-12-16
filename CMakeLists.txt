@@ -16,12 +16,15 @@ set(lib_src
 	error/error.h
 	analyser/analyser.h
 	analyser/analyser.cpp
+		analyser/parser.cpp
 	instruction/instruction.h
+
 )
 
 set(main_src
 	main.cpp
 	fmts.hpp
+
 )
 
 add_library(${PROJECT_LIB} ${lib_src})

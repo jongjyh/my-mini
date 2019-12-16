@@ -202,6 +202,22 @@ namespace miniplc0 {
                 //查看是否需要初始化
                 next = nextToken();
                 // '=' 需要
+                if(!next.has_value()||
+                        (next.value().GetType() != TokenType::EQUAL_SIGN&&
+                                next.value().GetType() != TokenType::COMMA))
+                {
+                    //不是一个变量声名，可能是一个函数定义。需要回溯
+                    if(isconst==true)//有const一定是变量声名，返回错误
+                        return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
+                    else
+                    {
+                        unreadToken();//'('
+                        unreadToken();//id
+                        unreadToken();//type
+                        return {};
+                    }
+
+                }
                 if (next.has_value() && next.value().GetType() == TokenType::EQUAL_SIGN)
                 {
                     // '<表达式>'
@@ -435,7 +451,7 @@ namespace miniplc0 {
         return {};
     }
     /*
-     * 条件表达式 >0 true <=0 false
+     * 条件表达式  其他 true ==0 false
      * <condition> ::=
      * <expression>[<relational-operator><expression>]
      */
@@ -462,39 +478,39 @@ namespace miniplc0 {
                 return err;
             // >
             if(next.value().GetType() == GREATER_THAN_SIGN){
-                // -1 0 1 false false  true （第一个值大的是1，cmp与>逻辑相同）
+                // -1 0 1  -> 0 0 any false false  true （第一个值大的是1，cmp与>逻辑相同）
                 _instructions.emplace_back(Operation::ICMP,0);
             }
-            //<
+            // <
             else if(next.value().GetType() == LESS_THAN_SIGN){
-                //乘以-1取反  -1 0 1 -> 1 0 -1 true false false
+                //乘以-1取反  -1 0 1 -> any 0 0 true false false
                 _instructions.emplace_back(Operation::ICMP,0);
-                _instructions.emplace_back(Operation::IPUSH,-1);
-                _instructions.emplace_back(Operation::ISUB,0);
+                _instructions.emplace_back(Operation::INEG,0);
             }
-            // >=
+            // >= finish
             else if(next.value().GetType() == GRT_EQU_SIGN){
-                // -1 0 1 -> 0 1 2 false  true true
+                // -1 0 1 -> 0 any any false  true true
                 _instructions.emplace_back(Operation::ICMP,0);
                 _instructions.emplace_back(Operation::IPUSH,1);
                 _instructions.emplace_back(Operation::IADD,0);
             }
-            // <=
+            // <= finish
             else if(next.value().GetType() == LES_EQU_SIGN){
-                //取反后+1  -1 0 1 -> 2 1 0 true true false
+                //符号取反后+1  -1 0 1 -> any any 0 true true false
                 _instructions.emplace_back(Operation::ICMP,0);
-                _instructions.emplace_back(Operation::IPUSH,-1);
-                _instructions.emplace_back(Operation::ISUB,0);
                 _instructions.emplace_back(Operation::IPUSH,1);
-                _instructions.emplace_back(Operation::IADD,0);
+                _instructions.emplace_back(Operation::ISUB,0);
             }
             // ==
             else if(next.value().GetType() == IS_EQU_SIGN){
-                // -1 0 1 -> 0 1 0
+                _instructions.emplace_back(Operation::ICMP,0);
+                // -1 0 1 -> 0 any 0 false true false
             }
-            // !=
+            // != finish
             else if(next.value().GetType() == NOT_EQU_SIGN){
-                // -1 0 1 -> 1 0 1
+                _instructions.emplace_back(Operation::ISUB,0);
+
+                // -1 0 1 -> any 0 any true false true
             }
         }
     }
@@ -540,6 +556,17 @@ namespace miniplc0 {
     /*
      * <loop-statement> ::=
      * 'while' '(' <condition> ')' <statement>
+     * 1求值<condition>
+     * 2如果<condition>是false，跳转到步骤5
+     *  S0:
+     *  JNE S1
+     *  [statement]
+     *  JMP S0
+     *  S1:
+     *  ...
+     * 3控制进入while的代码块并顺序执行
+     * 4控制达到while代码块的尾部时，跳转到步骤1控制
+     * 5跳过while结构，执行之后的代码块
      */
     std::optional<CompilationError> Analyser::analyseLoopStatement(){
         auto next=nextToken();
@@ -579,12 +606,25 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //<printable-list>
         next=nextToken();
-        auto err=analyseExpressionList();
+        auto err=analyseExpression();
         if (err.has_value())
             return err;
-        /*
-         * 输入某个变量的值
-         */
+        _instructions.emplace_back(Operation::IPRINT,0);
+        //,
+        while(1)
+        {
+            next=nextToken();
+            if (!next.has_value() || next.value().GetType() != TokenType::COMMA)
+            {
+                unreadToken();
+                return{};
+            }
+            auto err=analyseExpression();
+            if (err.has_value())
+                return err;
+            _instructions.emplace_back(Operation::IPRINT,0);
+        }
+
         //')'
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
@@ -811,35 +851,6 @@ namespace miniplc0 {
         return {};
 	}
 
-	// <输出语句> ::= 'print' '(' <表达式> ')' ';'
-	std::optional<CompilationError> Analyser::analyseOutputStatement() {
-		// 如果之前 <语句序列> 的实现正确，这里第一个 next 一定是 TokenType::PRINT
-		auto next = nextToken();
-
-		// '('
-		next = nextToken();
-		if (!next.has_value() || next.value().GetType() != TokenType::LEFT_BRACKET)
-			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidPrint);
-
-		// <表达式>
-		auto err = analyseExpression();
-		if (err.has_value())
-			return err;
-
-		// ')'
-		next = nextToken();
-		if (!next.has_value() || next.value().GetType() != TokenType::RIGHT_BRACKET)
-			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidPrint);
-
-		// ';'
-		next = nextToken();
-		if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
-			return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
-
-		// 生成相应的指令 print
-		_instructions.emplace_back(Operation::IPRINT, 0);
-		return {};
-	}
 
 	// <项> :: = <因子>{ <乘法型运算符><因子> }
 
