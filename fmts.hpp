@@ -154,27 +154,67 @@ namespace fmt {
 			case miniplc0::NULL_TOKEN:
 				name = "NullToken";
 				break;
-			case miniplc0::INT:
-				name = "Integer";
-				break;
+            case miniplc0::VOID:
+                name = "void";
+                break;
+            case miniplc0::CHAR:
+                name = "char";
+                break;
+            case miniplc0::DOUBLE:
+                name = "double";
+                break;
+            case miniplc0::STRUCT:
+                name = "struct";
+                break;
+            case miniplc0::INT:
+			    name = "Integer";
+			    break;
 			case miniplc0::IDENTIFIER:
 				name = "Identifier";
-				break;
-			case miniplc0::BEGIN:
-				name = "Begin";
-				break;
-			case miniplc0::END:
-				name = "End";
-				break;
-			case miniplc0::VAR:
-				name = "Var";
 				break;
 			case miniplc0::CONST:
 				name = "Const";
 				break;
-			case miniplc0::PRINT:
-				name = "Print";
-				break;
+			case IF:
+                name = "if";
+                break;
+			case ELSE:
+                name = "else";
+                break;
+			case SWITCH:
+                name = "switch";
+                break;
+			case CASE:
+                name = "case";
+                break;
+			case DEFAULT:
+                name = "default";
+                break;
+			case WHILE:
+                name = "while";
+                break;
+			case FOR:
+                name = "for";
+                break;
+			case DO:
+                name = "do";
+                break;
+			case RETURN:
+                name = "return";
+                break;
+			case BREAK:
+                name = "break";
+                break;
+			case CONTINUE:
+                name = "continue";
+                break;
+			case PRINT:
+                name = "print";
+                break;
+			case SCAN:
+                name = "scan";
+                break;
+
 			case miniplc0::PLUS_SIGN:
 				name = "PlusSign";
 				break;
@@ -190,15 +230,44 @@ namespace fmt {
 			case miniplc0::EQUAL_SIGN:
 				name = "EqualSign";
 				break;
-			case miniplc0::SEMICOLON:
-				name = "Semicolon";
-				break;
-			case miniplc0::LEFT_BRACKET:
-				name = "LeftBracket";
-				break;
-			case miniplc0::RIGHT_BRACKET:
-				name = "RightBracket";
-				break;
+
+			case miniplc0::GREATER_THAN_SIGN://>
+                name = "GreaterThanSign";
+                    break;
+			case miniplc0::LESS_THAN_SIGN://<
+                name = "LessthanSign";
+                    break;
+            case miniplc0::GRT_EQU_SIGN:// >=
+                name = "GreEquSign";
+                    break;
+            case miniplc0::LES_EQU_SIGN:// <=
+                name = "LesEquSign";
+                    break;
+            case miniplc0::IS_EQU_SIGN:// ==
+                name = "IsEquSign";
+                    break;
+            case miniplc0::NOT_EQU_SIGN:// !=
+                name = "NotEquSign";
+                    break;
+            case miniplc0::COMMA:// ,
+                name = "Comma";
+                    break;
+            case miniplc0::SEMICOLON:// ;
+                name = "Semicolon";
+                    break;
+            case miniplc0::LEFT_BRACKET://(
+                name = "LeftBracket";
+                    break;
+            case miniplc0::RIGHT_BRACKET://)
+                name = "RightBracket";
+                    break;
+            case miniplc0::LEFT_BRACE:
+                name = "LeftBrace";
+                    break;
+            case miniplc0::RIGHT_BRACE:
+                name = "RightBrace";
+                    break;
+
 			}
 			return format_to(ctx.out(), name);
 		}
