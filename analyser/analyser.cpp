@@ -987,6 +987,8 @@ namespace miniplc0 {
 		    case TokenType::INTEGER: {
                 int32_t num;
                 num = std::any_cast<int>(next.value().GetValue());
+                std::cout<<"\n"<<num<<"\n";
+
                 //进常量表
                 addCONST(next.value());
                 _instructions.emplace_back(Operation::LOADC, _CONSTS.size()-1);
