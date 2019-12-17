@@ -272,7 +272,7 @@ namespace miniplc0 {
                     insindex+=5;
                     continue;
                 }
-
+                std::cout<<"no comma unread\n";
                     unreadToken();
                     break;
 
