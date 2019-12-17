@@ -28,6 +28,7 @@ namespace miniplc0 {
     public:
         Program(std::vector<std::pair<std::string,int>> _CONSTS,std::vector<Function> _funcs,std::vector<std::vector<Instruction>> _program):
         _CONSTS(_CONSTS),_funcs(_funcs),_program(_program){}
+        Program(){}
         std::vector<std::pair<std::string,int>> getConstList(){
             return _CONSTS;
         }
