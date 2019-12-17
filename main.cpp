@@ -59,10 +59,11 @@ void Analyse(std::istream& input, std::ostream& output){
     }
     output << fmt::format("\n");
     output << fmt::format(".functions:\n");
+    /*
     for(int i=0;i<funlist.size();i++){
         output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].para,funlist[i].level);
     }
-    /*
+
     output << fmt::format("\n");
 	for (int i=1;i<program.size();i++)
     {
