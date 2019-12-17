@@ -51,9 +51,8 @@ namespace miniplc0 {
     {
         while(1) {
             auto next = nextToken();
-            if(!next.has_value())
-                return {};
-            if ((next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
+            std::cout<<"\n"<<next.has_value()<<"\n";
+            if (!next.has_value() ||(next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
                 unreadToken();
                 return {};
             }
@@ -127,6 +126,7 @@ namespace miniplc0 {
             //空声明
             if (!next.has_value()||(next.value().GetType() != TokenType::CONST&&next.value().GetType() != TokenType::VOID&&next.value().GetType() != TokenType::INT))
             {
+                unreadToken();
                 return std::make_pair(0,std::optional<CompilationError>());
             }
             // 'const' 可选
@@ -189,10 +189,11 @@ namespace miniplc0 {
             bool isconst = false;
             auto next = nextToken();
             //空声明
-            if(!next.has_value())
-                return {};
-            if ((next.value().GetType() != TokenType::CONST && next.value().GetType() != TokenType::VOID &&
+            if (!next.has_value() ||
+                (next.value().GetType() != TokenType::CONST && next.value().GetType() != TokenType::VOID &&
                  next.value().GetType() != TokenType::INT)) {
+                std::cout<<next.has_value();
+                std::cout<<"should end here\n";
                 unreadToken();
                 return {};
             }
