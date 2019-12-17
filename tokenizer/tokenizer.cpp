@@ -74,6 +74,7 @@ namespace miniplc0 {
 			// 1. 每次循环前立即读入一个 char
 			// 2. 只有在可能会转移的状态读入一个 char
 			// 因为我们实现了 unread，为了省事我们选择第一种
+			std::cout<<"before nextChar\n";
 			auto current_char = nextChar();
             auto ch = current_char.value();
             std::cout<<ch<<"\n";
@@ -84,7 +85,7 @@ namespace miniplc0 {
 				// 这个 case 我们给出了核心逻辑，但是后面的 case 不用照搬。
 			case INITIAL_STATE: {
 				// 已经读到了文件尾
-				std::cout<<"init\n";
+
 				if (!current_char.has_value())
                 // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
                 {
