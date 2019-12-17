@@ -71,7 +71,7 @@ namespace miniplc0 {
                 isret = true;
             //<identifier>
             next = nextToken();
-
+            std::cout<<"here function\n";
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
             /*
@@ -219,17 +219,18 @@ namespace miniplc0 {
                 next = nextToken();
                 std::string str = next.value().GetValueString();
                 if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
+                {
+                    std::cout<<"here \n";
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
+                }
                 if (isDeclared(next.value().GetValueString()))
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
                 Token var = next.value();
                 //查看是否需要初始化
                 next = nextToken();
                 // '=' 需要
-                if(!next.has_value()||
-                        (next.value().GetType() != TokenType::EQUAL_SIGN&&
-                                next.value().GetType() != TokenType::COMMA))
-                {
+                if(!next.has_value()||(next.value().GetType() != TokenType::EQUAL_SIGN&&
+                                next.value().GetType() != TokenType::COMMA&&next.value().GetType() != TokenType::SEMICOLON)){
                     //不是一个变量声名，可能是一个函数定义。需要回溯
                     if(isconst==true)//有const一定是变量声名，返回错误
                         return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
@@ -242,7 +243,8 @@ namespace miniplc0 {
                     }
 
                 }
-                if (next.has_value() && next.value().GetType() == TokenType::EQUAL_SIGN)
+
+                if (next.value().GetType() == TokenType::EQUAL_SIGN)
                 {
                     // '<表达式>'
                     auto err = analyseExpression();
@@ -259,7 +261,7 @@ namespace miniplc0 {
                     continue;
                 }
                 // ','
-                if (next.has_value() && next.value().GetType() == TokenType::COMMA) {
+                else if (next.value().GetType() == TokenType::COMMA) {
                     /*
                      * 声名一个未初始化变量，初始化为0
                      */
@@ -268,19 +270,13 @@ namespace miniplc0 {
                     insindex+=5;
                     continue;
                 }
-                    unreadToken();
+                unreadToken();
                 break;
-
                 }
-
-
-
             // ';'
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
-
-
         }
 		return {};
 	}
