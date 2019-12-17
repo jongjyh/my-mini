@@ -57,7 +57,7 @@ namespace miniplc0 {
         std::optional<CompilationError> analyseStatement();
         //复合语句
         //<参数列表>
-        std::pair<int32_t para,std::optional<CompilationError>> analyseParameterClause();
+        std::pair<int32_t,std::optional<CompilationError>> analyseParameterClause();
 		// <表达式>
 		std::optional<CompilationError> analyseExpression();
 		//<表达式list>
