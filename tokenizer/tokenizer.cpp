@@ -5,19 +5,14 @@
 namespace miniplc0 {
 
 	std::pair<std::optional<Token>, std::optional<CompilationError>> Tokenizer::NextToken() {
-        std::cout<<"NEXTtoken():\n";
 	    if (!_initialized)
 			readAll();
-        std::cout<<"bad()before:\n";
 		if (_rdr.bad())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrStreamError));
-        std::cout<<"isEOF()before:\n";
 		if (isEOF())
         {
-		    std::cout<<"reach eof;\n";
 		    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
         }
-        std::cout<<"nextToken()before:\n";
 		auto p = nextToken();
 
 		if (p.second.has_value())
@@ -33,26 +28,15 @@ namespace miniplc0 {
 		std::vector<Token> result;
 		while (true) {
 			auto p = NextToken();
-			std::cout<<"1\n";
 			if (p.second.has_value()) {
-                std::cout<<"2\n";
 				if (p.second.value().GetCode() == ErrorCode::ErrEOF){
-                    std::cout<<"result:\n";
-                    std::cout<<result.size();
-
-                    std::cout<<p.first.value().GetValueString()<<"\n";
-                    std::cout<<p.first.value().GetValueString()<<"\n";
                     return std::make_pair(result, std::optional<CompilationError>());
 				}
 
 				else
 					return std::make_pair(std::vector<Token>(), p.second);
 			}
-            std::cout<<"ALLtoken():\n";
-
-            std::cout<<p.first.value().GetValueString()<<"\n";
 			result.emplace_back(p.first.value());
-            std::cout<<"222:\n";
 		}
 	}
 
@@ -102,7 +86,6 @@ namespace miniplc0 {
 				if (miniplc0::isspace(ch)) // 读到的字符是空白字符（空格、换行、制表符等）
                 {
 				    if(ch=='\n')
-				        std::cout<<"i got the n\n";
 				    current_state = DFAState::INITIAL_STATE; // 保留当前状态为初始状态，此处直接break也是可以的
                 }
 				else if (!miniplc0::isprint(ch)) // control codes and backspace
@@ -319,7 +302,6 @@ namespace miniplc0 {
                     unreadLast();
                     std::string str;
                     ss>>str;
-                    std::cout<<"return iden eof\n";
                     if (str == "void")
                         return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "int")
@@ -369,7 +351,6 @@ namespace miniplc0 {
 
 				else
                 {
-				    std::cout<<"return abc\n";
 				    unreadLast();
 				    std::string  str;
 				    ss>>str;
@@ -588,8 +569,7 @@ namespace miniplc0 {
 	}
 
 	bool Tokenizer::isEOF() {
-	    std::cout<<_ptr.first<<" "<<_lines_buffer.size()<<":\n";
-        std::cout<< _ptr.first >= _lines_buffer.size()<<"\n";
+
 		return _ptr.first >= _lines_buffer.size();
 	}
 
