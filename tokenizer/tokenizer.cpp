@@ -8,13 +8,16 @@ namespace miniplc0 {
         std::cout<<"NEXTtoken():\n";
 	    if (!_initialized)
 			readAll();
+        std::cout<<"bad()before:\n";
 		if (_rdr.bad())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrStreamError));
+        std::cout<<"isEOF()before:\n";
 		if (isEOF())
         {
 		    std::cout<<"reach eof;\n";
 		    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
         }
+        std::cout<<"nextToken()before:\n";
 		auto p = nextToken();
 
 		if (p.second.has_value())
