@@ -32,7 +32,7 @@ namespace miniplc0 {
 				else
 					return std::make_pair(std::vector<Token>(), p.second);
 			}
-            std::cout<<"herestr:"<<p.first.value();
+            std::cout<<"herestr:"<<p.first.value().GetValueString();
 			result.emplace_back(p.first.value());
 		}
 	}
