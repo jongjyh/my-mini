@@ -31,6 +31,7 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
         auto next=nextToken();
+        std::cout<<next.value().GetType()<<"\n";
         if(next.has_value())
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoEnd);
         return {};
@@ -50,8 +51,7 @@ namespace miniplc0 {
     {
         while(1) {
             auto next = nextToken();
-            if (!next.has_value() ||
-                (next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
+            if (!next.has_value() ||(next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
                 unreadToken();
                 return {};
             }
@@ -71,7 +71,6 @@ namespace miniplc0 {
                 isret = true;
             //<identifier>
             next = nextToken();
-            std::cout<<"here function\n";
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
             /*
@@ -279,7 +278,6 @@ namespace miniplc0 {
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
             {
-                std::cout<<next.value().GetType()<<"\n";
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
             }
         }
@@ -987,7 +985,6 @@ namespace miniplc0 {
 		    case TokenType::INTEGER: {
                 int32_t num;
                 num = std::any_cast<int>(next.value().GetValue());
-                std::cout<<"\n"<<num<<"\n";
 
                 //进常量表
                 addCONST(next.value());
