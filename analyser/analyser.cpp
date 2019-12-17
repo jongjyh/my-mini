@@ -84,12 +84,12 @@ namespace miniplc0 {
 
 
         //<parameter-clause>
-        auto err=analyseParameterClause();
-        if (err.second.has_value())
-            return err.second.has_value();
-        addFuntion(str,1,err.first);
+        auto perr=analyseParameterClause();
+        if (perr.second.has_value())
+            return perr.second;
+        addFuntion(str,1,perr.first);
         //<compound-statement>
-        err=analyseCompoundStatement();
+        auto err=analyseCompoundStatement();
         if (err.has_value())
             return err;
         /*
