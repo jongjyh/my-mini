@@ -35,14 +35,39 @@ void Analyse(std::istream& input, std::ostream& output){
 		exit(2);
 	}
 	auto v = p.first;
+    std::vector<std::pair<std::string,int>> Consts=v.getConstList();
+    std::vector<Function> funlist=v.getFunctionList();
+    std::vector<Instruction> beginCode=getBeginCode();
+    std::vector<std::vector<Instruction>> program=v.getProgramList();
+
     output << fmt::format(".constants:\n");
-	for (int i=0;i<v.size;i++)
+    for(int i=0;i<Consts.size();i++){
+        std::string INT="I",STR="S",type,value=Consts[i].first;
+
+        if(Consts[i].second==0)
+            type=INT;
+        else
+            type=STR;
+        output << fmt::format("\t{} {} {}\n",i, type,value);
+    }
+    output << fmt::format("\n");
+    output << fmt::format(".start:\n");
+    for(int i=0;i<beginCode.size();i++){
+        output << fmt::format("\t{} {}\n", i,beginCode[i]);
+    }
+    output << fmt::format("\n");
+    output << fmt::format(".functions:\n");
+    for(int i=0;i<funlist.size();i++){
+        output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].para,funlist[i].level);
+    }
+    output << fmt::format("\n");
+	for (int i=0;i<program.size();i++)
     {
-	    it= v[i];
+	    auto it= v[i];
         output << fmt::format(".F{}:\n",i);
-	    for (auto& itt:it)
+	    for (int j=0;j<it.size();j++)
         {
-            output << fmt::format("{}\n", itt);
+            output << fmt::format("\t{} {}\n",j,it[j]);
         }
     }
 
