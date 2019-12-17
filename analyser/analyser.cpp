@@ -250,7 +250,7 @@ namespace miniplc0 {
                     auto err = analyseExpression();
                     if (err.has_value())
                         return err;
-
+                    next=nextToken();
                     /*
                      * 声名一个初始化变量
                      */
