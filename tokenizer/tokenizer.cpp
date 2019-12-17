@@ -26,11 +26,13 @@ namespace miniplc0 {
 			auto p = NextToken();
 			std::cout<<"1\n";
 			if (p.second.has_value()) {
+                std::cout<<"2\n";
 				if (p.second.value().GetCode() == ErrorCode::ErrEOF)
 					return std::make_pair(result, std::optional<CompilationError>());
 				else
 					return std::make_pair(std::vector<Token>(), p.second);
 			}
+            std::cout<<"3\n";
 			result.emplace_back(p.first.value());
 		}
 	}
