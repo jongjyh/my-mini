@@ -272,7 +272,7 @@ namespace miniplc0 {
                     continue;
                 }
                 else if (next.value().GetType() == TokenType::SEMICOLON) {
-                    std::cout<<"get ;\n"
+                    std::cout<<"get ;\n";
                     unreadToken();
                     break;
                 }
