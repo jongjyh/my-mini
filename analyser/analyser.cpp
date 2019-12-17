@@ -61,8 +61,7 @@ namespace miniplc0 {
             insindex = 0;
             _nextTokenIndex = 0;
             isret = true;
-            _program.emplace_back(_instructions);
-            _instructions.empty();
+
             //新的函数
 
             //<type-specifier> void or int
@@ -102,6 +101,8 @@ namespace miniplc0 {
              * 退出一个块
              */
             popCurrentLevel();
+            _program.emplace_back(_instructions);
+            _instructions.empty();
         }
     }
     //<parameter-clause> ::=
