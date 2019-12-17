@@ -99,7 +99,11 @@ namespace miniplc0 {
 				// 使用了自己封装的判断字符类型的函数，定义于 tokenizer/utils.hpp
 				// see https://en.cppreference.com/w/cpp/string/byte/isblank
 				if (miniplc0::isspace(ch)) // 读到的字符是空白字符（空格、换行、制表符等）
-					current_state = DFAState::INITIAL_STATE; // 保留当前状态为初始状态，此处直接break也是可以的
+                {
+				    if(ch=='\n')
+				        std::cout<<"i got the n\n";
+				    current_state = DFAState::INITIAL_STATE; // 保留当前状态为初始状态，此处直接break也是可以的
+                }
 				else if (!miniplc0::isprint(ch)) // control codes and backspace
 					invalid = true;
 				else if(ch=='0')//读到0，进入0状态
