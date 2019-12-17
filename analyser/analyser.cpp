@@ -186,27 +186,27 @@ namespace miniplc0 {
 		// 变量声明语句可能有一个或者多个
 		while(1) {
             // 预读？
-            bool isconst=false;
+            bool isconst = false;
             auto next = nextToken();
             //空声明
-            if (!next.has_value()||(next.value().GetType() != TokenType::CONST&&next.value().GetType() != TokenType::VOID&&next.value().GetType() != TokenType::INT))
-            {
+            if (!next.has_value() ||
+                (next.value().GetType() != TokenType::CONST && next.value().GetType() != TokenType::VOID &&
+                 next.value().GetType() != TokenType::INT)) {
                 unreadToken();
                 return {};
             }
             // 'const' 可选
-            if (next.value().GetType() == TokenType::CONST)
-            {
-                next=nextToken();
-                isconst=true;
+            if (next.value().GetType() == TokenType::CONST) {
+                next = nextToken();
+                isconst = true;
             }
 
             //<type-specifier>         ::= <simple-type-specifier>
             //<simple-type-specifier>  ::= 'void'|'int'
             //<const-qualifier>        ::= 'const'
-            if (!next.has_value() ||(
-            next.value().GetType() != TokenType::VOID&&
-            next.value().GetType() != TokenType::INT))
+            if (!next.has_value() || (
+                    next.value().GetType() != TokenType::VOID &&
+                    next.value().GetType() != TokenType::INT))
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
 
             //<init-declarator-list> ::=
@@ -215,12 +215,11 @@ namespace miniplc0 {
             //    <identifier>[<initializer>]
             //<initializer> ::=
             //    '='<expression>
-            while(1) {
+            while (1) {
                 next = nextToken();
                 std::string str = next.value().GetValueString();
 
-                if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
-                {
+                if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER) {
 
                     return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
                 }
@@ -230,12 +229,14 @@ namespace miniplc0 {
                 //查看是否需要初始化
                 next = nextToken();
                 // '=' 需要
-                if(!next.has_value()||(next.value().GetType() != TokenType::EQUAL_SIGN&&next.value().GetType() != TokenType::COMMA&&next.value().GetType() != TokenType::SEMICOLON)){
+                if (!next.has_value() ||
+                    (next.value().GetType() != TokenType::EQUAL_SIGN && next.value().GetType() != TokenType::COMMA &&
+                     next.value().GetType() != TokenType::SEMICOLON)) {
                     //不是一个变量声名，可能是一个函数定义。需要回溯
-                    if(isconst==true)//有const一定是变量声名，返回错误
-                        return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
-                    else
-                    {
+                    if (isconst == true)//有const一定是变量声名，返回错误
+                        return std::make_optional<CompilationError>(_current_pos,
+                                                                    ErrorCode::ErrInvalidVariableDeclaration);
+                    else {
                         unreadToken();//'('
                         unreadToken();//id
                         unreadToken();//type
@@ -243,8 +244,7 @@ namespace miniplc0 {
                     }
                 }
 
-                if (next.value().GetType() == TokenType::EQUAL_SIGN)
-                {
+                if (next.value().GetType() == TokenType::EQUAL_SIGN) {
 
                     // '<表达式>'
                     auto err = analyseExpression();
@@ -254,7 +254,7 @@ namespace miniplc0 {
                     /*
                      * 声名一个初始化变量
                      */
-                    if(isconst==true)
+                    if (isconst == true)
                         addConstant(var);
                     else
                         addVariable(var);
@@ -266,19 +266,22 @@ namespace miniplc0 {
                      * 声名一个未初始化变量，初始化为0
                      */
                     addUninitializedVariable(var);
-                    _instructions.emplace_back(Operation::IPUSH,0);
-                    insindex+=5;
+                    _instructions.emplace_back(Operation::IPUSH, 0);
+                    insindex += 5;
                     continue;
                 }
+                std::cout<<"here\n";
+                unreadToken();
+                break;
 
-                    unreadToken();
-                    break;
-
-                }
+            }
             // ';'
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
+            {
+
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
+            }
         }
 		return {};
 	}
