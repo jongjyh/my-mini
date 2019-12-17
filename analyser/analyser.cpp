@@ -218,7 +218,7 @@ namespace miniplc0 {
             while(1) {
                 next = nextToken();
                 std::string str = next.value().GetValueString();
-                std::cout<<"onetime\n";
+
                 if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
                 {
 
