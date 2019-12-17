@@ -7,12 +7,14 @@
 namespace miniplc0 {
     int32_t insindex=0;
     bool isret=true;//默认返回
-	std::pair<std::vector<std::vector<Instruction>>, std::optional<CompilationError>> Analyser::Analyse() {
+	std::pair< Program, std::optional<CompilationError>> Analyser::Analyse() {
 		auto err = analyseC0Program();
 		if (err.has_value())
 			return std::make_pair(std::vector<std::vector<Instruction>>(), err);
-		else
-			return std::make_pair(_program, std::optional<CompilationError>());
+		else {
+		    auto Pro=Program(_CONSTS,_funcs,_program);
+            return std::make_pair(Pro, std::optional<CompilationError>());
+        }
 	}
 	//<C0-program> ::= {<variable-declaration>}{<function-definition>}
     std::optional<CompilationError> Analyser::analyseC0Program()
@@ -28,7 +30,10 @@ namespace miniplc0 {
          err = analyseFunctionDeclaration();
         if (err.has_value())
             return err;
-
+        auto next=nextToken();
+        if(next.has_value())
+            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoEnd);
+        return {};
     }
     /*
      <function-definition> ::=
@@ -43,59 +48,60 @@ namespace miniplc0 {
      */
     std::optional<CompilationError> Analyser::analyseFunctionDeclaration()
     {
-        auto next = nextToken();
-        //预读
-        insindex=0;
-        _nextTokenIndex=0;
-        isret=true;
-        _program.emplace_back(_instructions);
-        _instructions.empty();
-        //新的函数
-        if (!next.has_value()||
-            (next.value().GetType() != TokenType::VOID&&
-             next.value().GetType() != TokenType::INT))
-        {
-            unreadToken();
-            return {};
+        while(1) {
+            auto next = nextToken();
+            if (!next.has_value() ||
+                (next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
+                unreadToken();
+                return {};
+            }
+            //预读
+            insindex = 0;
+            _nextTokenIndex = 0;
+            isret = true;
+            _program.emplace_back(_instructions);
+            _instructions.empty();
+            //新的函数
+
+            //<type-specifier> void or int
+            auto ret = next.value().GetType();
+            if (ret == VOID)
+                isret = false;
+            else
+                isret = true;
+            //<identifier>
+            next = nextToken();
+
+            if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
+                return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
+            /*
+             * 检查是否同名函数
+             */
+            std::string str = next.value().GetValueString();
+            if (isFunctionDeclared(str))
+                return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
+            Token fun = next.value();
+            //函数名加入常量表，记录常量表中的index
+            addCONST(fun);
+            /*
+             * 相当于进入一个新的块
+             */
+
+
+            //<parameter-clause>
+            auto perr = analyseParameterClause();
+            if (perr.second.has_value())
+                return perr.second;
+            addFuntion(str, 1, perr.first);
+            //<compound-statement>
+            auto err = analyseCompoundStatement();
+            if (err.has_value())
+                return err;
+            /*
+             * 退出一个块
+             */
+            popCurrentLevel();
         }
-        //<type-specifier> void or int
-        auto ret=next.value().GetType();
-        if(ret==VOID)
-            isret=false;
-        else
-            isret=true;
-        //<identifier>
-        next = nextToken();
-
-        if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
-            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
-        /*
-         * 检查是否同名函数
-         */
-        std::string str = next.value().GetValueString();
-        if(isFunctionDeclared(str))
-            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrDuplicateDeclaration);
-        Token fun=next.value();
-        //函数名加入常量表，记录常量表中的index
-        addCONST(fun);
-        /*
-         * 相当于进入一个新的块
-         */
-
-
-        //<parameter-clause>
-        auto perr=analyseParameterClause();
-        if (perr.second.has_value())
-            return perr.second;
-        addFuntion(str,1,perr.first);
-        //<compound-statement>
-        auto err=analyseCompoundStatement();
-        if (err.has_value())
-            return err;
-        /*
-         * 退出一个块
-         */
-        popCurrentLevel();
     }
     //<parameter-clause> ::=
     //    '(' [<parameter-declaration-list>] ')'

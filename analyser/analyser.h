@@ -24,6 +24,28 @@ namespace miniplc0 {
         int level;
 
     };
+    class Program{
+    public:
+        Program(std::vector<std::pair<std::string,int>> _CONSTS,std::vector<Function> _funcs,std::vector<std::vector<Instruction>> _program):
+        _CONSTS(_CONSTS),_funcs(_funcs),_program(_program){}
+        std::vector<std::pair<std::string,int>> getConstList(){
+            return _CONSTS;
+        }
+        std::vector<Function> getFunctionList(){
+            return _funcs;
+        }
+        std::vector<Instruction> getBeginCode(){
+            return _program[0];
+        }
+        std::vector<std::vector<Instruction>> getFunctionList(){
+            return _program;
+            //下标从1开始
+        }
+    private:
+        std::vector<std::pair<std::string,int>> _CONSTS;
+        std::vector<Function> _funcs;
+        std::vector<std::vector<Instruction>> _program;
+    };
 	class Analyser final {
 	private:
 		using uint64_t = std::uint64_t;
@@ -46,7 +68,7 @@ namespace miniplc0 {
 		Analyser& operator=(Analyser) = delete;
 
 		// 唯一接口
-        std::pair<std::vector<std::vector<Instruction>>, std::optional<CompilationError>> Analyse();
+        std::pair<Program, std::optional<CompilationError>> Analyse();
 	private:
 		// 所有的递归子程序
         std::optional<CompilationError> analyseC0Program();
