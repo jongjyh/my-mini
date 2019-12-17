@@ -368,6 +368,7 @@ namespace miniplc0 {
 
 				else
                 {
+				    std::cout<<"return abc\n";
 				    unreadLast();
 				    std::string  str;
 				    ss>>str;
