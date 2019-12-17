@@ -103,7 +103,7 @@ namespace miniplc0 {
     //    <parameter-declaration>{','<parameter-declaration>}
     //<parameter-declaration> ::=
     //    [<const-qualifier>]<type-specifier><identifier>
-    std::pair<int32_t para,CompilationError> Analyser::analyseParameterClause(){
+    std::pair<int32_t,CompilationError> Analyser::analyseParameterClause(){
 
         // '('
         auto next=nextToken();
