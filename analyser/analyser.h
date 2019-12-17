@@ -36,7 +36,11 @@ namespace miniplc0 {
 			_function({}),_constant({}),_CONSTS({}),_funcs({}),
 			_unit_var({}), _var({}), _const({}),
 			_nextTokenIndex(0),_nextConstIndex(0),_nextFuncIndex(0)
-			{}
+			{
+		    Cbp=_const.begin();
+		    Vbp=_var.begin();
+		    Ubp=_unit_var.begin();
+			}
 		Analyser(Analyser&&) = delete;
 		Analyser(const Analyser&) = delete;
 		Analyser& operator=(Analyser) = delete;
