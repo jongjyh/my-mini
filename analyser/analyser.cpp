@@ -190,7 +190,9 @@ namespace miniplc0 {
             bool isconst = false;
             auto next = nextToken();
             //空声明
-            if (!next.has_value() ||
+            if(!next.has_value())
+                return {};
+            if (
                 (next.value().GetType() != TokenType::CONST && next.value().GetType() != TokenType::VOID &&
                  next.value().GetType() != TokenType::INT)) {
                 std::cout<<next.has_value();
