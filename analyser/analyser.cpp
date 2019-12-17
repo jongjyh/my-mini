@@ -85,13 +85,13 @@ namespace miniplc0 {
 
         //<parameter-clause>
         auto err=analyseParameterClause();
-        if (err.has_value())
+        if (err.)
             return err;
         //<compound-statement>
         err=analyseCompoundStatement();
-        if (err.has_value())
-            return err;
-
+        if (err.second.has_value())
+            return err.second.has_value();
+        addFuntion(str,1,err.first);
         /*
          * 退出一个块
          */
@@ -103,16 +103,18 @@ namespace miniplc0 {
     //    <parameter-declaration>{','<parameter-declaration>}
     //<parameter-declaration> ::=
     //    [<const-qualifier>]<type-specifier><identifier>
-    std::optional<CompilationError> Analyser::analyseParameterClause(){
+    std::pair<int32_t para,std::optional<CompilationError>> Analyser::analyseParameterClause(){
 
         // '('
         auto next=nextToken();
+        int num=0;
         if(!next.has_value()||next.value().GetType()!=LEFT_BRACKET)
-            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBracket);
+            return std::make_pair(-1,std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBracket));
         //[<parameter-declaration-list>]
         while(1)
         {
             //预读
+            num++;
             bool isconst=false;
             auto next = nextToken();
             //空声明
@@ -133,12 +135,12 @@ namespace miniplc0 {
             if (!next.has_value() ||(
                 next.value().GetType() != TokenType::VOID&&
                 next.value().GetType() != TokenType::INT))
-                return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidParameterDeclaration);
+                return std::make_pair(-1,std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidParameterDeclaration));
             //<identifier>
             next = nextToken();
             std::string str = next.value().GetValueString();
             if (!next.has_value() || next.value().GetType() != TokenType::IDENTIFIER)
-                return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier);
+                return std::make_pair(-1,std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNeedIdentifier));
             Token var=next.value();
             /*
              * 处理参数声明,此处不需要指令因为call时会自己载入。
@@ -159,8 +161,8 @@ namespace miniplc0 {
         }
         //')'
         if(!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
-            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBracket);
-
+            return std::make_pair(-1,std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBracket));
+        return std::make_pair(num,std::optional<CompilationError>());
     }
 
 

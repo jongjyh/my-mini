@@ -36,8 +36,16 @@ void Analyse(std::istream& input, std::ostream& output){
 	}
 	auto v = p.first;
     output << fmt::format(".constants:\n");
-	for (auto& it : v)
-		output << fmt::format("{}\n", it);
+	for (int i=0;i<v.size;i++)
+    {
+	    it= v[i];
+        output << fmt::format(".F{}:\n",i);
+	    for (auto& itt:it)
+        {
+            output << fmt::format("{}\n", itt);
+        }
+    }
+
 	return;
 }
 
