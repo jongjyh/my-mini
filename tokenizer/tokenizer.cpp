@@ -45,6 +45,7 @@ namespace miniplc0 {
 
             std::cout<<p.first.value().GetValueString()<<"\n";
 			result.emplace_back(p.first.value());
+            std::cout<<"222:\n";
 		}
 	}
 
