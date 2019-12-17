@@ -12,7 +12,6 @@ namespace miniplc0 {
 		if (isEOF())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
 		auto p = nextToken();
-
 		if (p.second.has_value())
 			return std::make_pair(p.first, p.second);
 		auto err = checkToken(p.first.value());
@@ -33,7 +32,7 @@ namespace miniplc0 {
 				else
 					return std::make_pair(std::vector<Token>(), p.second);
 			}
-            std::cout<<"3\n";
+            std::cout<<"herestr:"<<p.first.value();
 			result.emplace_back(p.first.value());
 		}
 	}
@@ -58,7 +57,6 @@ namespace miniplc0 {
 			// 因为我们实现了 unread，为了省事我们选择第一种
 			auto current_char = nextChar();
             auto ch = current_char.value();
-
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
@@ -379,12 +377,8 @@ namespace miniplc0 {
                         return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "scan")
                         return std::make_pair(std::make_optional<Token>(TokenType::SCAN, str, pos, currentPos()),std::optional<CompilationError>());
-                    else{
-                        std::cout<<"here str:";
-                        std::cout<<str;
+                    else
                         return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()),std::optional<CompilationError>());
-                    }
-
                 }
 				// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串
 				//     如果解析结果是关键字，那么返回对应关键字的token，否则返回标识符的token
