@@ -167,8 +167,11 @@ namespace fmt {
                 name = "struct";
                 break;
             case miniplc0::INT:
-			    name = "Integer";
+			    name = "int";
 			    break;
+			    case miniplc0::INTEGER:
+			        NAME = "integer";
+			        break;
 			case miniplc0::IDENTIFIER:
 				name = "Identifier";
 				break;
