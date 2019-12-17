@@ -170,7 +170,7 @@ namespace fmt {
 			    name = "int";
 			    break;
 			    case miniplc0::INTEGER:
-			        NAME = "integer";
+			        name = "integer";
 			        break;
 			case miniplc0::IDENTIFIER:
 				name = "Identifier";
