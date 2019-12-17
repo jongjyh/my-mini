@@ -247,6 +247,7 @@ namespace miniplc0 {
 
                 if (next.value().GetType() == TokenType::EQUAL_SIGN)
                 {
+
                     // '<表达式>'
                     auto err = analyseExpression();
                     if (err.has_value())
@@ -262,7 +263,7 @@ namespace miniplc0 {
                     continue;
                 }
                 // ','
-                else if (next.value().GetType() == TokenType::COMMA) {
+                if (next.value().GetType() == TokenType::COMMA) {
                     /*
                      * 声名一个未初始化变量，初始化为0
                      */
@@ -272,7 +273,7 @@ namespace miniplc0 {
                     continue;
                 }
                 else if (next.value().GetType() == TokenType::SEMICOLON) {
-                    std::cout<<"get ;\n";
+
                     unreadToken();
                     break;
                 }
