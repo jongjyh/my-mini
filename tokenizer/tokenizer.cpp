@@ -559,7 +559,7 @@ namespace miniplc0 {
 	std::optional<char> Tokenizer::nextChar() {
 		if (isEOF())
         {
-		    cout<<"readch!!!!!\n";
+		    std::cout<<"readch!!!!!\n";
 		    return {};
         } // EOF
 		auto result = _lines_buffer[_ptr.first][_ptr.second];
