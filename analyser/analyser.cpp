@@ -192,6 +192,7 @@ namespace miniplc0 {
             if (!next.has_value() ||
                 (next.value().GetType() != TokenType::CONST && next.value().GetType() != TokenType::VOID &&
                  next.value().GetType() != TokenType::INT)) {
+                std::cout<<next.has_value();
                 std::cout<<"should end here\n";
                 unreadToken();
                 return {};
