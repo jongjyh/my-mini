@@ -12,6 +12,7 @@ namespace miniplc0 {
 		if (isEOF())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
 		auto p = nextToken();
+		cout<<p.first.GetValueString();
 		if (p.second.has_value())
 			return std::make_pair(p.first, p.second);
 		auto err = checkToken(p.first.value());
@@ -32,7 +33,7 @@ namespace miniplc0 {
 				else
 					return std::make_pair(std::vector<Token>(), p.second);
 			}
-            std::cout<<"herestr:"<<p.first.value().GetValueString();
+
 			result.emplace_back(p.first.value());
 		}
 	}
