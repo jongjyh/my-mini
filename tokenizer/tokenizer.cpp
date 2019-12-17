@@ -416,7 +416,7 @@ namespace miniplc0 {
                      * 增加了对 ==的判断
                      */
                     if(ch == '=')
-                        std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, "==", pos, currentPos()),
+                        std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, std::string("=="), pos, currentPos()),
                                        std::optional<CompilationError>());
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::EQUAL_SIGN, '=', pos, currentPos()),
@@ -444,9 +444,9 @@ namespace miniplc0 {
                 }
                 //>=
                 case GREATER_STATE: {
-                    std::cout<<"here \n";
+
                     if(ch=='=')
-                        return std::make_pair(std::make_optional<Token>(TokenType::GRT_EQU_SIGN, ">=", pos, currentPos()),
+                        return std::make_pair(std::make_optional<Token>(TokenType::GRT_EQU_SIGN, std::string(">="), pos, currentPos()),
                                               std::optional<CompilationError>());
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::GREATER_THAN_SIGN, '>', pos, currentPos()),
@@ -455,7 +455,7 @@ namespace miniplc0 {
                 //<=
                 case LESS_STATE: {
                     if(ch=='=')
-                        return std::make_pair(std::make_optional<Token>(TokenType::LES_EQU_SIGN, "<=", pos, currentPos()),
+                        return std::make_pair(std::make_optional<Token>(TokenType::LES_EQU_SIGN, std::string("<="), pos, currentPos()),
                                               std::optional<CompilationError>());
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::LESS_THAN_SIGN, '<', pos, currentPos()),
@@ -464,7 +464,7 @@ namespace miniplc0 {
                 //   !=
                 case NOT_EQU_STATE: {
                     if(ch=='=')
-                        return std::make_pair(std::make_optional<Token>(TokenType::NOT_EQU_SIGN, "!=", pos, currentPos()),
+                        return std::make_pair(std::make_optional<Token>(TokenType::NOT_EQU_SIGN, std::string("!="), pos, currentPos()),
                                               std::optional<CompilationError>());
                     //不是!= 返回错误
                     unreadLast();
