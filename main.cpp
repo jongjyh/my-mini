@@ -11,7 +11,7 @@
 std::vector<miniplc0::Token> _tokenize(std::istream& input) {
 	miniplc0::Tokenizer tkz(input);
 	auto p = tkz.AllTokens();
-	cout<<"_token";
+	std::cout<<"_token";
 	if (p.second.has_value()) {
 		fmt::print(stderr, "Tokenization error: {}\n", p.second.value());
 		exit(2);
