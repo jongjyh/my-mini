@@ -35,16 +35,15 @@ void Analyse(std::istream& input, std::ostream& output){
 		fmt::print(stderr, "Syntactic analysis error: {}\n", p.second.value());
 		exit(2);
 	}
-	/*auto v = p.first;
+	auto v = p.first;
     std::vector<std::pair<std::string,int>> Consts=v.getConstList();
     std::vector<miniplc0::Function> funlist=v.getFunctionList();
     std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
     std::vector<std::vector<miniplc0::Instruction>> program=v.getProgramList();
-
+/*
     output << fmt::format(".constants:\n");
     for(int i=0;i<Consts.size();i++){
         std::string INT="I",STR="S",type,value=Consts[i].first;
-
         if(Consts[i].second==0)
             type=INT;
         else
