@@ -265,14 +265,16 @@ namespace miniplc0 {
                         addVariable(var);
 
                 }
+                else {
+                    addUninitializedVariable(var);
+                    _instructions.emplace_back(Operation::IPUSH, 0);
+                    insindex += 5;
+                }
                 // ','
                 if (next.value().GetType() == TokenType::COMMA) {
                     /*
                      * 声名一个未初始化变量，初始化为0
                      */
-                    addUninitializedVariable(var);
-                    _instructions.emplace_back(Operation::IPUSH, 0);
-                    insindex += 5;
                     continue;
                 }
 
