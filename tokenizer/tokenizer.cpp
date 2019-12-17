@@ -58,6 +58,7 @@ namespace miniplc0 {
 			// 因为我们实现了 unread，为了省事我们选择第一种
 			auto current_char = nextChar();
             auto ch = current_char.value();
+            std::cout<<ch;
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
@@ -289,7 +290,7 @@ namespace miniplc0 {
                 {
                     std::string str;
                     ss>>str;
-                    std::cout<<ch;
+
                     if (str == "void")
                         return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "int")
