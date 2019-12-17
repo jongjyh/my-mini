@@ -18,6 +18,8 @@ namespace miniplc0 {
 		auto err = checkToken(p.first.value());
 		if (err.has_value())
 			return std::make_pair(p.first, err.value());
+        std::cout<<"NextToken():\n";
+		std::cout<<p.first.value().GetValueString()<<"\n";
 		return std::make_pair(p.first, std::optional<CompilationError>());
 	}
 
