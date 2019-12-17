@@ -270,7 +270,7 @@ namespace miniplc0 {
                     insindex += 5;
                     continue;
                 }
-                std::cout<<"here\n";
+
                 unreadToken();
                 break;
 
@@ -279,7 +279,7 @@ namespace miniplc0 {
             next = nextToken();
             if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
             {
-
+                std::cout<<next.value().GetType()<<"\n";
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
             }
         }
