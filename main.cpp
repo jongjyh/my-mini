@@ -37,9 +37,9 @@ void Analyse(std::istream& input, std::ostream& output){
 	auto v = p.first;
     std::vector<std::pair<std::string,int>> Consts=v.getConstList();
     std::vector<miniplc0::Function> funlist=v.getFunctionList();
-
-    std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
 /*
+    std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
+
     std::vector<std::vector<miniplc0::Instruction>> program=v.getProgramList();
 
     output << fmt::format(".constants:\n");
