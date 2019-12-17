@@ -444,6 +444,7 @@ namespace miniplc0 {
                 }
                 //>=
                 case GREATER_STATE: {
+                    std::cout<<"here\n";
                     if(ch=='=')
                         return std::make_pair(std::make_optional<Token>(TokenType::GRT_EQU_SIGN, ">=", pos, currentPos()),
                                               std::optional<CompilationError>());
