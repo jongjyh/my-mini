@@ -493,12 +493,12 @@ namespace miniplc0 {
                 }
                 case LEFTBRACE_STATE: {
                     unreadLast();
-                    return std::make_pair(std::make_optional<Token>(TokenType::LEFT_BRACKET, '{', pos, currentPos()),
+                    return std::make_pair(std::make_optional<Token>(TokenType::LEFT_BRACE, '{', pos, currentPos()),
                                           std::optional<CompilationError>());
                 }
                 case RIGHTBRACE_STATE: {
                     unreadLast();
-                    return std::make_pair(std::make_optional<Token>(TokenType::RIGHT_BRACKET, '}', pos, currentPos()),
+                    return std::make_pair(std::make_optional<Token>(TokenType::RIGHT_BRACE, '}', pos, currentPos()),
                                           std::optional<CompilationError>());
                 }
 								   // 预料之外的状态，如果执行到了这里，说明程序异常

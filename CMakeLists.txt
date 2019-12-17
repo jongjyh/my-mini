@@ -16,15 +16,12 @@ set(lib_src
 	error/error.h
 	analyser/analyser.h
 	analyser/analyser.cpp
-		analyser/parser.cpp
 	instruction/instruction.h
-
 )
 
 set(main_src
 	main.cpp
 	fmts.hpp
-
 )
 
 add_library(${PROJECT_LIB} ${lib_src})
@@ -86,7 +83,13 @@ if (MSVC AND OPEN_CPP_COVERAGE)
 else()
 	
 endif()
-
+if (MSVC_VERSION GREATER_EQUAL "1900")
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("/std:c++latest" _cpp_latest_flag_supported)
+    if (_cpp_latest_flag_supported)
+        add_compile_options("/std:c++latest")
+    endif()
+endif()
 set_target_properties(miniplc0_test PROPERTIES
                       CXX_STANDARD 17
                       CXX_STANDARD_REQUIRE ON)
