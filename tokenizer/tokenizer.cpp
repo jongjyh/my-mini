@@ -74,10 +74,9 @@ namespace miniplc0 {
 			// 1. 每次循环前立即读入一个 char
 			// 2. 只有在可能会转移的状态读入一个 char
 			// 因为我们实现了 unread，为了省事我们选择第一种
-			std::cout<<"before nextChar\n";
+
 			auto current_char = nextChar();
-            auto ch = current_char.value();
-            std::cout<<ch<<"\n";
+
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
@@ -89,7 +88,7 @@ namespace miniplc0 {
 				if (!current_char.has_value())
                 // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
                 {
-				    std::cout<<"return eof\n";
+
 				    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrEOF));
                 }
 
@@ -587,6 +586,7 @@ namespace miniplc0 {
 
 	bool Tokenizer::isEOF() {
 	    std::cout<<_ptr.first<<" "<<_lines_buffer.size()<<":\n";
+        std::cout<< _ptr.first >= _lines_buffer.size()<<"\n";
 		return _ptr.first >= _lines_buffer.size();
 	}
 
