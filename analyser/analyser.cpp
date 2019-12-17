@@ -272,11 +272,9 @@ namespace miniplc0 {
                     insindex+=5;
                     continue;
                 }
-                else if (next.value().GetType() == TokenType::SEMICOLON) {
 
                     unreadToken();
                     break;
-                }
 
                 }
             // ';'
