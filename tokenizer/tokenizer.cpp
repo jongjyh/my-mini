@@ -176,6 +176,7 @@ namespace miniplc0 {
 			}
 			// 0 状态
 			case ZERO_STATE :{
+                auto ch = current_char.value();
 			    if(ch == 'x' ||ch == 'X')
                 {
 			        current_state=DFAState ::HEXADECIMAL_STATE;
