@@ -103,7 +103,7 @@ namespace miniplc0 {
     //    <parameter-declaration>{','<parameter-declaration>}
     //<parameter-declaration> ::=
     //    [<const-qualifier>]<type-specifier><identifier>
-    std::pair<int32_t para,std::optional<CompilationError>> Analyser::analyseParameterClause(){
+    std::pair<int32_t para,CompilationError> Analyser::analyseParameterClause(){
 
         // '('
         auto next=nextToken();
@@ -114,16 +114,17 @@ namespace miniplc0 {
         while(1)
         {
             //预读
-            num++;
+
             bool isconst=false;
             auto next = nextToken();
             //空声明
             if (!next.has_value()||(next.value().GetType() != TokenType::CONST&&next.value().GetType() != TokenType::VOID&&next.value().GetType() != TokenType::INT))
             {
                 unreadToken();
-                return {};
+                return std::make_pair(0,std::optional<CompilationError>());
             }
             // 'const' 可选
+            num++;
             if (next.value().GetType() == TokenType::CONST)
             {
                 next=nextToken();
