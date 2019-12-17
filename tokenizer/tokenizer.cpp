@@ -12,6 +12,7 @@ namespace miniplc0 {
 		if (isEOF())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
 		auto p = nextToken();
+
 		if (p.second.has_value())
 			return std::make_pair(p.first, p.second);
 		auto err = checkToken(p.first.value());
@@ -288,7 +289,7 @@ namespace miniplc0 {
                 {
                     std::string str;
                     ss>>str;
-
+                    std::cout<<ch;
                     if (str == "void")
                         return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "int")
