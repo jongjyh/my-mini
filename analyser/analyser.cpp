@@ -230,8 +230,7 @@ namespace miniplc0 {
                 //查看是否需要初始化
                 next = nextToken();
                 // '=' 需要
-                if(!next.has_value()||(next.value().GetType() != TokenType::EQUAL_SIGN&&
-                                next.value().GetType() != TokenType::COMMA&&next.value().GetType() != TokenType::SEMICOLON)){
+                if(!next.has_value()||(next.value().GetType() != TokenType::EQUAL_SIGN&&next.value().GetType() != TokenType::COMMA&&next.value().GetType() != TokenType::SEMICOLON)){
                     //不是一个变量声名，可能是一个函数定义。需要回溯
                     if(isconst==true)//有const一定是变量声名，返回错误
                         return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidVariableDeclaration);
@@ -242,12 +241,11 @@ namespace miniplc0 {
                         unreadToken();//type
                         return {};
                     }
-
                 }
 
                 if (next.value().GetType() == TokenType::EQUAL_SIGN)
                 {
-
+                    std::cout<<"get =\n";
                     // '<表达式>'
                     auto err = analyseExpression();
                     if (err.has_value())
