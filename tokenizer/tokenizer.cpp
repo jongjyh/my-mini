@@ -24,6 +24,7 @@ namespace miniplc0 {
 		std::vector<Token> result;
 		while (true) {
 			auto p = NextToken();
+			std::cout<<"1\n";
 			if (p.second.has_value()) {
 				if (p.second.value().GetCode() == ErrorCode::ErrEOF)
 					return std::make_pair(result, std::optional<CompilationError>());
