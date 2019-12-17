@@ -207,8 +207,8 @@ namespace miniplc0 {
                 if (!current_char.has_value())
                     // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
                 {
+                    unreadLast();
                     long long  container;
-
                     sscanf(ss.str().c_str(), "%x", &container);
 
                     if(container > 2147483647 )
@@ -256,6 +256,7 @@ namespace miniplc0 {
                 if (!current_char.has_value())
                     // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
                 {
+                    unreadLast();
                     long long  container;
                     ss>>container;
 
@@ -309,6 +310,7 @@ namespace miniplc0 {
 				// 如果当前已经读到了文件尾，则解析已经读到的字符串
                 if (!current_char.has_value())
                 {
+                    unreadLast();
                     std::string str;
                     ss>>str;
 
