@@ -207,6 +207,7 @@ namespace miniplc0 {
                 if (!current_char.has_value())
                     // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
                 {
+
                     unreadLast();
                     long long  container;
                     sscanf(ss.str().c_str(), "%x", &container);
@@ -216,7 +217,7 @@ namespace miniplc0 {
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
                     int num = container;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INTEGER, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
 
@@ -296,7 +297,7 @@ namespace miniplc0 {
                     stream << container;
                     stream >> num;
                     return std::make_pair(
-                            std::make_optional<Token>(TokenType::INT, num, pos, currentPos()),
+                            std::make_optional<Token>(TokenType::INTEGER, num, pos, currentPos()),
                             std::optional<CompilationError>());
                 }
                 //     解析成功则返回无符号整数类型的token，否则返回编译错误
@@ -313,7 +314,7 @@ namespace miniplc0 {
                     unreadLast();
                     std::string str;
                     ss>>str;
-
+                    std::cout<<"return iden eof\n";
                     if (str == "void")
                         return std::make_pair(std::make_optional<Token>(TokenType::VOID, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "int")
