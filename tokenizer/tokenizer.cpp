@@ -565,6 +565,7 @@ namespace miniplc0 {
 	}
 
 	bool Tokenizer::isEOF() {
+	    std::cout<<"isEOF\n";
 		return _ptr.first >= _lines_buffer.size();
 	}
 
