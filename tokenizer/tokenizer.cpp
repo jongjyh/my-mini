@@ -12,7 +12,7 @@ namespace miniplc0 {
 		if (isEOF())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
 		auto p = nextToken();
-		std::cout<<p.first.GetValueString();
+		std::cout<<p.first.value().GetValueString();
 		if (p.second.has_value())
 			return std::make_pair(p.first, p.second);
 		auto err = checkToken(p.first.value());
