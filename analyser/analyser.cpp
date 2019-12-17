@@ -51,6 +51,8 @@ namespace miniplc0 {
     {
         while(1) {
             auto next = nextToken();
+            _program.emplace_back(_instructions);
+            _instructions.empty();
             if(!next.has_value())
                 return {};
             if ((next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
@@ -101,8 +103,7 @@ namespace miniplc0 {
              * 退出一个块
              */
             popCurrentLevel();
-            _program.emplace_back(_instructions);
-            _instructions.empty();
+
         }
     }
     //<parameter-clause> ::=
