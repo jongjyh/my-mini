@@ -37,7 +37,7 @@ namespace miniplc0 {
         std::vector<Instruction> getBeginCode(){
             return _program[0];
         }
-        std::vector<std::vector<Instruction>> getFunctionList(){
+        std::vector<std::vector<Instruction>> getProgramList(){
             return _program;
             //下标从1开始
         }
