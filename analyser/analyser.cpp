@@ -31,7 +31,7 @@ namespace miniplc0 {
         if (err.has_value())
             return err;
         auto next=nextToken();
-
+        std::cout<<"\n"<<next.value().GetType()<<"\n";
         if(next.has_value())
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoEnd);
         return {};
@@ -51,7 +51,7 @@ namespace miniplc0 {
     {
         while(1) {
             auto next = nextToken();
-            std::cout<<"\n"<<next.value().GetType()<<"\n";
+
             if (!next.has_value()||(next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
                 unreadToken();
                 return {};
