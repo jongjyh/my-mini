@@ -388,7 +388,7 @@ namespace fmt {
 			case miniplc0::POPN:
 			case miniplc0::LOADC:
             case miniplc0::IPUSH:
-				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());\
+				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());
 			case miniplc0::LOADA:
                 return format_to(ctx.out(), "{} {} {}", p.GetOperation(), p.GetX(),p.GetY());
 			}
