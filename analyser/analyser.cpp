@@ -51,7 +51,7 @@ namespace miniplc0 {
     {
         while(1) {
             auto next = nextToken();
-            cout<<"\n"<<next.value().GetType()<<"\n";
+            std::cout<<"\n"<<next.value().GetType()<<"\n";
             if (!next.has_value()||(next.value().GetType() != TokenType::VOID && next.value().GetType() != TokenType::INT)) {
                 unreadToken();
                 return {};
