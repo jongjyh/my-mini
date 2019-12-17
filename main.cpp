@@ -35,7 +35,7 @@ void Analyse(std::istream& input, std::ostream& output){
 		fmt::print(stderr, "Syntactic analysis error: {}\n", p.second.value());
 		exit(2);
 	}
-	auto v = p.first;
+	/*auto v = p.first;
     std::vector<std::pair<std::string,int>> Consts=v.getConstList();
     std::vector<miniplc0::Function> funlist=v.getFunctionList();
     std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
@@ -71,7 +71,7 @@ void Analyse(std::istream& input, std::ostream& output){
             output << fmt::format("\t{} {}\n",j,it[j]);
         }
     }
-
+*/
 	return;
 }
 
