@@ -450,6 +450,7 @@ namespace miniplc0 {
                     /*
                      * 增加了对 ==的判断
                      */
+                    auto ch = current_char.value();
                     if(ch == '=')
                         std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, std::string("=="), pos, currentPos()),
                                        std::optional<CompilationError>());
@@ -479,7 +480,7 @@ namespace miniplc0 {
                 }
                 //>=
                 case GREATER_STATE: {
-
+                    auto ch = current_char.value();
                     if(ch=='=')
                         return std::make_pair(std::make_optional<Token>(TokenType::GRT_EQU_SIGN, std::string(">="), pos, currentPos()),
                                               std::optional<CompilationError>());
@@ -489,6 +490,7 @@ namespace miniplc0 {
                 }
                 //<=
                 case LESS_STATE: {
+                    auto ch = current_char.value();
                     if(ch=='=')
                         return std::make_pair(std::make_optional<Token>(TokenType::LES_EQU_SIGN, std::string("<="), pos, currentPos()),
                                               std::optional<CompilationError>());
@@ -498,6 +500,7 @@ namespace miniplc0 {
                 }
                 //   !=
                 case NOT_EQU_STATE: {
+                    auto ch = current_char.value();
                     if(ch=='=')
                         return std::make_pair(std::make_optional<Token>(TokenType::NOT_EQU_SIGN, std::string("!="), pos, currentPos()),
                                               std::optional<CompilationError>());
