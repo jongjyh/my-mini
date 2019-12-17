@@ -58,7 +58,7 @@ namespace miniplc0 {
 			// 因为我们实现了 unread，为了省事我们选择第一种
 			auto current_char = nextChar();
             auto ch = current_char.value();
-            std::cout<<ch;
+
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
@@ -379,8 +379,12 @@ namespace miniplc0 {
                         return std::make_pair(std::make_optional<Token>(TokenType::PRINT, str, pos, currentPos()),std::optional<CompilationError>());
                     else if (str == "scan")
                         return std::make_pair(std::make_optional<Token>(TokenType::SCAN, str, pos, currentPos()),std::optional<CompilationError>());
-                    else
+                    else{
+                        std::cout<<"here str:";
+                        std::cout<<str;
                         return std::make_pair(std::make_optional<Token>(TokenType::IDENTIFIER, str, pos, currentPos()),std::optional<CompilationError>());
+                    }
+
                 }
 				// 如果读到的字符不是上述情况之一，则回退读到的字符，并解析已经读到的字符串
 				//     如果解析结果是关键字，那么返回对应关键字的token，否则返回标识符的token
