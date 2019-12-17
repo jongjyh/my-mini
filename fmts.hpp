@@ -34,7 +34,7 @@ namespace fmt {
 				name = "The program should start with 'begin'.";
 				break;
 			case miniplc0::ErrNoEnd:
-				name = "The program should end with 'end'.";
+				name = "Program ending is wrong!";
 				break;
 			case miniplc0::ErrNeedIdentifier:
 				name = "Need an identifier here.";
