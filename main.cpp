@@ -40,7 +40,7 @@ void Analyse(std::istream& input, std::ostream& output){
     std::vector<miniplc0::Function> funlist=v.getFunctionList();
 
     std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
-    /*
+
     std::vector<std::vector<miniplc0::Instruction>> program=v.getProgramList();
 
     output << fmt::format(".constants:\n");
@@ -63,7 +63,7 @@ void Analyse(std::istream& input, std::ostream& output){
         output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].para,funlist[i].level);
     }
     output << fmt::format("\n");
-	for (int i=0;i<program.size();i++)
+	for (int i=1;i<program.size();i++)
     {
 	    auto it= program[i];
         output << fmt::format(".F{}:\n",i);
@@ -72,7 +72,7 @@ void Analyse(std::istream& input, std::ostream& output){
             output << fmt::format("\t{} {}\n",j,it[j]);
         }
     }
-*/
+
 	return;
 }
 
