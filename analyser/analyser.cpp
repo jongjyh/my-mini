@@ -10,7 +10,7 @@ namespace miniplc0 {
 	std::pair< Program, std::optional<CompilationError>> Analyser::Analyse() {
 		auto err = analyseC0Program();
 		if (err.has_value())
-			return std::make_pair(Program(), err);
+			return std::make_pair(nullptr, err);
 		else {
 		    auto Pro=Program(_CONSTS,_funcs,_program);
             return std::make_pair(Pro, std::optional<CompilationError>());
