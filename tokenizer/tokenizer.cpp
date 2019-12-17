@@ -5,7 +5,8 @@
 namespace miniplc0 {
 
 	std::pair<std::optional<Token>, std::optional<CompilationError>> Tokenizer::NextToken() {
-		if (!_initialized)
+        std::cout<<"NEXTtoken():\n";
+	    if (!_initialized)
 			readAll();
 		if (_rdr.bad())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrStreamError));
@@ -559,7 +560,7 @@ namespace miniplc0 {
 	std::optional<char> Tokenizer::nextChar() {
 		if (isEOF())
         {
-		    std::cout<<"readch!!!!!\n";
+
 		    return {};
         } // EOF
 		auto result = _lines_buffer[_ptr.first][_ptr.second];
