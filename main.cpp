@@ -11,7 +11,6 @@
 std::vector<miniplc0::Token> _tokenize(std::istream& input) {
 	miniplc0::Tokenizer tkz(input);
 	auto p = tkz.AllTokens();
-	std::cout<<"_token";
 	if (p.second.has_value()) {
 		fmt::print(stderr, "Tokenization error: {}\n", p.second.value());
 		exit(2);
@@ -42,7 +41,7 @@ void Analyse(std::istream& input, std::ostream& output){
     std::vector<miniplc0::Instruction> beginCode=v.getBeginCode();
 
     std::vector<std::vector<miniplc0::Instruction>> program=v.getProgramList();
-
+/*
     output << fmt::format(".constants:\n");
     for(int i=0;i<Consts.size();i++){
         std::string INT="I",STR="S",type,value=Consts[i].first;
@@ -59,7 +58,7 @@ void Analyse(std::istream& input, std::ostream& output){
     }
     output << fmt::format("\n");
     output << fmt::format(".functions:\n");
-    /*
+
     for(int i=0;i<funlist.size();i++){
         output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].para,funlist[i].level);
     }
