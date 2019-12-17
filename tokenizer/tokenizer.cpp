@@ -85,8 +85,11 @@ namespace miniplc0 {
 			case INITIAL_STATE: {
 				// 已经读到了文件尾
 				if (!current_char.has_value())
-					// 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
-					return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrEOF));
+                // 返回一个空的token，和编译错误ErrEOF：遇到了文件尾
+                {
+				    std::cout<<"return eof\n";
+				    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrEOF));
+                }
 
 				// 获取读到的字符的值，注意auto推导出的类型是char
 				auto ch = current_char.value();
