@@ -62,6 +62,7 @@ void Analyse(std::istream& input, std::ostream& output){
     for(int i=0;i<funlist.size();i++){
         output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].para,funlist[i].level);
     }
+    /*
     output << fmt::format("\n");
 	for (int i=1;i<program.size();i++)
     {
@@ -71,7 +72,7 @@ void Analyse(std::istream& input, std::ostream& output){
         {
             output << fmt::format("\t{} {}\n",j,it[j]);
         }
-    }
+    }*/
 
 	return;
 }
