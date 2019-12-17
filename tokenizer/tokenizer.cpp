@@ -10,7 +10,10 @@ namespace miniplc0 {
 		if (_rdr.bad())
 			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrStreamError));
 		if (isEOF())
-			return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
+        {
+		    std::cout<<"reach eof;\n";
+		    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(0, 0, ErrorCode::ErrEOF));
+        }
 		auto p = nextToken();
 
 		if (p.second.has_value())
