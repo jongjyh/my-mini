@@ -245,7 +245,7 @@ namespace miniplc0 {
 
                 if (next.value().GetType() == TokenType::EQUAL_SIGN)
                 {
-                    std::cout<<"get =\n";
+
                     // '<表达式>'
                     auto err = analyseExpression();
                     if (err.has_value())
@@ -258,7 +258,7 @@ namespace miniplc0 {
                         addConstant(var);
                     else
                         addVariable(var);
-                    continue;
+
                 }
                 // ','
                 if (next.value().GetType() == TokenType::COMMA) {
@@ -270,7 +270,7 @@ namespace miniplc0 {
                     insindex+=5;
                     continue;
                 }
-                std::cout<<"no comma unread\n";
+
                     unreadToken();
                     break;
 
