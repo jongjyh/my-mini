@@ -76,6 +76,7 @@ namespace miniplc0 {
 			// 因为我们实现了 unread，为了省事我们选择第一种
 			auto current_char = nextChar();
             auto ch = current_char.value();
+            std::cout<<ch<<"\n";
 			// 针对当前的状态进行不同的操作
 			switch (current_state) {
 
