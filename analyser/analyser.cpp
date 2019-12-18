@@ -127,11 +127,11 @@ namespace miniplc0 {
             bool isconst=false;
             auto next = nextToken();
             //空声明
-            if (!next.has_value()||(next.value().GetType() != TokenType::CONST&&next.value().GetType() != TokenType::VOID&&next.value().GetType() != TokenType::INT))
-            {
-                unreadToken();
-                return std::make_pair(0,std::optional<CompilationError>());
-            }
+            if (!next.has_value()||(next.value().GetType() != TokenType::RIGHT_BRACKET&&next.value().GetType() != TokenType::CONST&&
+            next.value().GetType() != TokenType::VOID&&next.value().GetType() != TokenType::INT))
+                return std::make_pair(-1,std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidParameterDeclaration));
+            if(next.value().GetType() == TokenType::RIGHT_BRACKET)
+                return std::make_pair(num,std::optional<CompilationError>());
             // 'const' 可选
             num++;
             if (next.value().GetType() == TokenType::CONST)
@@ -312,7 +312,7 @@ namespace miniplc0 {
         next=nextToken();
         if(!next.has_value()||next.value().GetType()!=RIGHT_BRACE)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBrace);
-
+        return {};
 	}
     //<statement-seq> ::=
     //	{<statement>}
@@ -545,6 +545,7 @@ namespace miniplc0 {
                 // -1 0 1 -> any 0 any true false true
             }
         }
+        return {};
     }
     /*
      * 条件语句
@@ -594,7 +595,7 @@ namespace miniplc0 {
         err=analyseStatement();
         if (err.has_value())
             return err;
-
+        return {};
     }
     //循环语句
     /*
@@ -642,7 +643,7 @@ namespace miniplc0 {
         //回填jne s1
         s1=insindex;
         _instructions[jne].SetX(s1);
-
+        return  {};
 
     }
     //输出语句
@@ -661,35 +662,21 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //<printable-list>
         next=nextToken();
-        auto err=analyseExpression();
-        if (err.has_value())
-            return err;
-        _instructions.emplace_back(Operation::IPRINT,0);
-        insindex+=1;
-        //,
         while(1)
         {
-            next=nextToken();
-            if (!next.has_value() || next.value().GetType() != TokenType::COMMA)
+            auto err= analyseExpression();
+            if(err.has_value())
+                return err;
+            next =nextToken();
+            if(!next.has_value()||next.value().GetType()!=COMMA)
             {
                 unreadToken();
-                return{};
+                break;
             }
-            auto err=analyseExpression();
-            if (err.has_value())
-                return err;
-            _instructions.emplace_back(Operation::IPRINT,0);
-            insindex+=1;
         }
-
-        //')'
         next=nextToken();
         if (!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
-        //';
-        next=nextToken();
-        if (!next.has_value() || next.value().GetType() != TokenType::SEMICOLON)
-            return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoSemicolon);
         return {};
     }
     //扫描语句
