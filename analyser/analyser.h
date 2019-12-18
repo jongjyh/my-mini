@@ -27,7 +27,9 @@ namespace miniplc0 {
     class Program{
     public:
         Program(std::vector<std::pair<std::string,int>> _CONSTS,std::vector<Function> _funcs,std::vector<std::vector<Instruction>> _program):
-        _CONSTS(_CONSTS),_funcs(_funcs),_program(_program){}
+        _CONSTS(_CONSTS),_funcs(_funcs),_program(_program){
+
+        }
         Program(){}
         std::vector<std::pair<std::string,int>> getConstList(){
             return _CONSTS;
@@ -60,9 +62,8 @@ namespace miniplc0 {
 			_unit_var({}), _var({}), _const({}),
 			_nextTokenIndex(0),_nextConstIndex(0),_nextFuncIndex(0)
 			{
-		    Cbp=_const.begin();
-		    Vbp=_var.begin();
-		    Ubp=_unit_var.begin();
+		    //初始化
+
 			}
 		Analyser(Analyser&&) = delete;
 		Analyser(const Analyser&) = delete;
@@ -123,8 +124,8 @@ namespace miniplc0 {
 		// 下面是符号表相关操作
 
 		// helper function
-		void _add(const Token&, std::vector<std::pair<std::string,int32_t>>& sk);
-        int32_t _find(const std::string& ,std::vector<std::pair<std::string,int32_t>>& );
+		void _add(const Token&, std::map<std::string, int32_t>& sk);
+        int32_t _find(const std::string& ,std::map<std::string, int32_t>& );
         int32_t _findLocal(const std::string& );
         int32_t _findGlobal(const std::string& );
 		// 添加变量、常量、未初始化的变量
@@ -149,10 +150,17 @@ namespace miniplc0 {
         int32_t getFuncIndex(const std::string& );
 
         //符号表管理
+        void InitStack();
         void loadNewLevel();//将pre指针指向当前 prepre=pre,pre=top;top++
         void popCurrentLevel();//top=pre ,pre=prepre
         void loadOne(const std::string& s);//top++
         std::pair<int32_t,int32_t>  getIndex(const std::string&);
+
+        std::vector<std::pair<std::string,int32_t>>::iterator getGlobalVarEnd();
+        std::vector<std::pair<std::string,int32_t>>::iterator getGlobalUnitEnd();
+
+        std::vector<std::pair<std::string,int32_t>>::iterator getGlobalConstEnd();
+
         // 获得 {变量，常量} 在栈上的偏移
 
 
@@ -182,12 +190,12 @@ namespace miniplc0 {
         int32_t _nextFuncIndex;
         int32_t _nextConstIndex;
         bool InitialToken(std::string &str);
-        std::vector<std::pair<std::string,int32_t>> _var;
-        std::vector<std::pair<std::string,int32_t>> _unit_var;
-        std::vector<std::pair<std::string,int32_t>> _const;
-        std::vector<std::pair<std::string,int32_t>>::iterator Vbp;
-        std::vector<std::pair<std::string,int32_t>>::iterator Ubp;
-        std::vector<std::pair<std::string,int32_t>>::iterator Cbp;
+        std::map<std::string, int32_t> _var;
+        std::map<std::string, int32_t> _unit_var;
+        std::map<std::string, int32_t> _const;
+        std::map<std::string, int32_t> g_var;//仅做全局变量为空时迭代器所指的地方
+        std::map<std::string, int32_t> g_unit_var;
+        std::map<std::string, int32_t> g_const;
     };
 
 }

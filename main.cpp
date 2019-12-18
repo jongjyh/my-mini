@@ -67,7 +67,7 @@ void Analyse(std::istream& input, std::ostream& output){
 	for (int i=1;i<program.size();i++)
     {
 	    auto it= program[i];
-        output << fmt::format(".F{}:\n",i);
+        output << fmt::format(".F{}:\n",i-1);
 	    for (int j=0;j<it.size();j++)
         {
             output << fmt::format("\t{} {}\n",j,it[j]);
