@@ -380,14 +380,14 @@ namespace fmt {
             case miniplc0::IPRINT:
             case miniplc0::ISCAN:
             case miniplc0::POP:
-            case miniplc0::JE:
-            case miniplc0::JNE:
-            case miniplc0::JMP:
 				return format_to(ctx.out(), "{}", p.GetOperation());
 			case miniplc0::CALL:
 			case miniplc0::POPN:
 			case miniplc0::LOADC:
             case miniplc0::IPUSH:
+            case miniplc0::JE:
+            case miniplc0::JNE:
+            case miniplc0::JMP:
 				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());
 			case miniplc0::LOADA:
                 return format_to(ctx.out(), "{} {} {}", p.GetOperation(), p.GetX(),p.GetY());

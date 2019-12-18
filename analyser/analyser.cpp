@@ -476,11 +476,13 @@ namespace miniplc0 {
                     err = analyseAssignmentStatement();
                     if (err.has_value())
                         return err;
+                    break;
                 }
                 if (isFunctionDeclared(s)) {
                     err = analyseFunctionCall();
                     if (err.has_value())
                         return err;
+                    break;
                 }
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNotDeclared);
                 break;
