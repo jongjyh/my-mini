@@ -763,7 +763,6 @@ namespace miniplc0 {
 
         _instructions.emplace_back(Operation::CALL,index);
         insindex+=3;
-
         return {};
     }
     //返回语句
