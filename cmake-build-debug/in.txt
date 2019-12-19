@@ -1,0 +1,9 @@
+int g0 = 42;
+
+int fun(int num) {
+int b=7*8+1;
+}
+
+int main() {
+    return fun(-123456);
+}

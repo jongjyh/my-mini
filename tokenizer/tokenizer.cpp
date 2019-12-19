@@ -212,7 +212,7 @@ namespace miniplc0 {
 
                 auto ch = current_char.value();
                 auto invalid = false;
-                if(miniplc0::isdigit(ch))
+                if(miniplc0::isdigit(ch)||(ch>='a'&&ch<='f')||(ch>='A'&&ch<='F'))
                     // 如果读到的字符是数字，则存储读到的字符
                     ss << ch;
                     // 如果读到的是字母，则存储读到的字符，并切换状态到标识符

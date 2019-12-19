@@ -82,7 +82,7 @@ namespace fmt {
                 name = "Invalid Parameter Declaration";
                 break;
             case miniplc0::ErrFuctionBrace:
-                name = "Function brace{} can't not fetch";
+                name = "Function brace can't not fetch";
                 break;
             case miniplc0::ErrIncompleteConditionStatement:
                 name = "Incomplete ConditionStatement!";
@@ -91,7 +91,7 @@ namespace fmt {
                 name = "Your bracket can't not match";
                 break;
             case miniplc0::ErrinvalidStatement:
-                name = "Incomplete ConditionStatement!";
+                name = "Invalid Statement!";
                 break;
             case miniplc0::ErrIncompleteScanStatement:
                 name = "Incomplete ScanStatement!";

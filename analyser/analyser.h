@@ -162,7 +162,11 @@ namespace miniplc0 {
         std::vector<std::pair<std::string,int32_t>>::iterator getGlobalConstEnd();
 
         // 获得 {变量，常量} 在栈上的偏移
+        bool isBeenLoad(Token &token);
 
+        bool isCONST(std::string basicString);
+
+        uint32_t getCONSTindex(Token token);
 
 	private:
 		std::vector<Token> _tokens;
@@ -189,6 +193,7 @@ namespace miniplc0 {
 		int32_t _nextTokenIndex;
         int32_t _nextFuncIndex;
         int32_t _nextConstIndex;
+        int32_t _nextGTokenIndex;
         bool InitialToken(std::string &str);
         std::map<std::string, int32_t> _var;
         std::map<std::string, int32_t> _unit_var;
@@ -196,6 +201,10 @@ namespace miniplc0 {
         std::map<std::string, int32_t> g_var;//仅做全局变量为空时迭代器所指的地方
         std::map<std::string, int32_t> g_unit_var;
         std::map<std::string, int32_t> g_const;
+        std::vector<std::string> localVars;
+        bool isGlabol;
+
+        void deleteVar(std::string basicString);
     };
 
 }
