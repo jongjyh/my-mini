@@ -27,9 +27,8 @@ namespace miniplc0 {
 		POP,
 		JE,
 		JNE,
-		JMP
-
-	};
+		JMP, JG, JL, JGE, JLE
+    };
 	
 	class Instruction final {
 	private:

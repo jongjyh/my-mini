@@ -120,6 +120,12 @@ namespace miniplc0 {
 					case '/':
 					    current_state= DFAState::DIVISION_SIGN_STATE;
                             break;
+                        case '\'':
+                            current_state= DFAState::SIGQUT_STATE;
+                            break;
+                        case '\"':
+                            current_state= DFAState::DOUQUT_STATE;
+                            break;
 						// 请填空：切换状态
 
 					///// 请填空：
@@ -170,11 +176,95 @@ namespace miniplc0 {
 					return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
 				}
 				// 如果读到的字符导致了状态的转移，说明它是一个token的第一个字符
-				if (current_state != DFAState::INITIAL_STATE) // ignore white spaces
+				if (current_state != DFAState::INITIAL_STATE&& ch!='\''&&ch!='\"') // ignore white spaces
 					ss << ch; // 存储读到的字符
 				break;
 			}
+
+			    // \'
+			    case SIGQUT_STATE:{
+                        auto ch=current_char;
+                        if(ch.has_value() && ch != '\\' &&ch !='\'') {
+                            ss << ch.value();
+                            ch = nextChar();
+                        }
+                        if(!ch.has_value())
+                           return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        // '//'
+                        if(ch=='\'')
+                            return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, ss.str(), pos, currentPos()), std::optional<CompilationError>());
+                        ch=nextChar();
+                        if(!ch.has_value())
+                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        switch(ch.value())
+                        {
+                            case 't':ss<<'\t';break;
+                            case 'n':ss<<'\n';break;
+                            case '\"':ss<<'\"';break;
+                            case '\'':ss<<'\'';break;
+                            case '\\':ss<<'\\';break;
+                            case 'r':ss<<'\r';break;
+                            default: return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        }
+                    ch=nextChar();
+                        if(!ch.has_value()||ch.value()!='\'')
+                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+
+                    return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, ss.str(), pos, currentPos()), std::optional<CompilationError>());
+			    }
+			    // \"
+                case DOUQUT_STATE:{
+                    unreadLast();
+                    while(true) {
+                        auto ch=nextChar();
+                        while (ch.has_value() && ch != '\\' &&ch !='\"') {
+                            ss << ch.value();
+                            ch = nextChar();
+                        }
+                        if(!ch.has_value())
+                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        // '//'
+                        if(ch=='\"')
+                        {
+                            return std::make_pair(std::make_optional<Token>(TokenType::STRING_LIT, ss.str(), pos, currentPos()), std::optional<CompilationError>());
+                        }
+                        ch=nextChar();
+                        if(!ch.has_value())
+                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        switch(ch.value())
+                        {
+                            case 'X':
+                            case 'x':
+                            {
+                                ch=nextChar();
+                                std::stringstream hex;
+                                hex<<"0x";
+                                while(ch.has_value()&&isdigit(ch.value()))
+                                {hex<<ch.value();ch=nextChar();}
+                                unreadLast();
+                                long long num;
+                                sscanf(hex.str().c_str(),"%x",&num);
+                                if(num>255)
+                                    return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrTooBigForChar));
+                                char c=num;
+                                ss<<c;
+                                break;
+                            }
+                            case 't':ss<<'\t';break;
+                            case 'n':ss<<'\n';break;
+                            case '\"':ss<<'\"';break;
+                            case '\'':ss<<'\'';break;
+                            case '\\':ss<<'\\';break;
+                            case 'r':ss<<'\r';break;
+                            default: return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        }
+                    }
+                    break;
+                }
+
+
 			// 0 状态
+
 			case ZERO_STATE :{
                 auto ch = current_char.value();
 			    if(ch == 'x' ||ch == 'X')
@@ -417,9 +507,46 @@ namespace miniplc0 {
 								   // 对于其他的合法状态，进行合适的操作
 								   // 比如进行解析、返回token、返回编译错误
              case DIVISION_SIGN_STATE: {
+                 auto ch=current_char;
+                 if(ch=='/')
+                 {
+
+                     while(ch.has_value()&&(ch!=0x0a&&ch!=0x0d))
+                         ch=nextChar();
+                     current_state=INITIAL_STATE;
+
+                     ss.clear();
+                     ss.str("");
+                     break;
+                 }
+                 else if(ch=='*')
+                 {
+                     while(1) {
+                         do{
+                             ch=nextChar();
+                         }while(ch.has_value()&&ch != '*');
+                         if(!ch.has_value())
+                         {
+                             return std::make_pair(std::optional<Token>(),
+                                                          std::make_optional<CompilationError>(pos, ErrorCode::ErrCommentNoEnd));
+                         }
+                         ch=nextChar();
+                         if (ch=='/')
+                            {
+                             current_state=INITIAL_STATE;
+                             break;
+                            }
+                     }
+                     ss.clear();
+                     ss.str("");
+                     break;
+
+                 }
+
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::DIVISION_SIGN, '/', pos, currentPos()),
                                           std::optional<CompilationError>());
+                    break;
                 }
                 case MULTIPLICATION_SIGN_STATE: {
                     unreadLast();

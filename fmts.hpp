@@ -110,7 +110,18 @@ namespace fmt {
                 break;
             case miniplc0::ErrIncompleteWhileStatement:
                 name = "Incomplete WhileStatement!";
-                break;
+                    break;
+			case miniplc0::ErrWrongCallParameter:
+			    name = "call parameter can't match!";break;
+            case miniplc0::ErrinvalidExpression:
+                name = " empty Expression!";break;
+			case miniplc0::ErrCommentNoEnd:
+                name = "Comment has no end!";break;
+            case miniplc0::ErrEmptyRelationExp:
+                name = "Empty RelationExp!";break;
+			    case miniplc0::ErrTooBigForChar:
+			        name = "char is overfloat";
+			        break;
 			}
 			return format_to(ctx.out(), name);
 		}
@@ -270,6 +281,12 @@ namespace fmt {
             case miniplc0::RIGHT_BRACE:
                 name = "RightBrace";
                     break;
+			    case miniplc0::STRING_LIT:
+			        name = "String";
+			        break;
+			    case miniplc0::CHAR_LIT:
+			        name= "Char";
+			                break;
 
 			}
 			return format_to(ctx.out(), name);
@@ -353,8 +370,20 @@ namespace fmt {
              case miniplc0::JMP:
                  name = "jmp";
                  break;
+                case miniplc0::JGE:
+                    name = "jge";
+                    break;
+                case miniplc0::JLE:
+                    name = "jle";
+                    break;
+                case miniplc0::JG:
+                    name = "jg";
+                    break;
+                case miniplc0::JL:
+                    name = "jl";
+                    break;
 
-			}
+            }
 			return format_to(ctx.out(), name);
 		}
 	};
@@ -388,6 +417,10 @@ namespace fmt {
             case miniplc0::JE:
             case miniplc0::JNE:
             case miniplc0::JMP:
+            case miniplc0::JL:
+            case miniplc0::JLE:
+            case miniplc0::JG:
+            case miniplc0::JGE:
 				return format_to(ctx.out(), "{} {}", p.GetOperation(), p.GetX());
 			case miniplc0::LOADA:
                 return format_to(ctx.out(), "{} {} {}", p.GetOperation(), p.GetX(),p.GetY());

@@ -89,7 +89,7 @@ namespace miniplc0 {
 		// <表达式>
 		std::optional<CompilationError> analyseExpression();
 		//<表达式list>
-        std::optional<CompilationError> analyseExpressionList();
+        std::pair<int32_t ,std::optional<CompilationError>> analyseExpressionList();
 		// <赋值语句>
 		std::optional<CompilationError> analyseAssignmentStatement();
 
@@ -126,7 +126,7 @@ namespace miniplc0 {
 		// helper function
 		void _add(const Token&, std::map<std::string, int32_t>& sk);
         int32_t _find(const std::string& ,std::map<std::string, int32_t>& );
-        int32_t _findLocal(const std::string& );
+        std::pair<int32_t,int32_t> _findLocal(const std::string& );
         int32_t _findGlobal(const std::string& );
 		// 添加变量、常量、未初始化的变量
 		//添加函数表 ，返回索引
@@ -144,9 +144,9 @@ namespace miniplc0 {
 		// 是否是已初始化的变量
 		bool isInitializedVariable(const std::string& );
 		// 是否是常量
-		bool isConstant(const std::string& s);
+		bool isConstant(const std::string& );
 
-		void getConstIndex(const std::string& s,int &index);
+		int32_t getConstIndex(const Token&);
         int32_t getFuncIndex(const std::string& );
 
         //符号表管理
@@ -195,16 +195,27 @@ namespace miniplc0 {
         int32_t _nextConstIndex;
         int32_t _nextGTokenIndex;
         bool InitialToken(std::string &str);
-        std::map<std::string, int32_t> _var;
-        std::map<std::string, int32_t> _unit_var;
-        std::map<std::string, int32_t> _const;
+        std::map<std::string, int32_t>* _var;
+        std::map<std::string, int32_t>* _unit_var;
+        std::map<std::string, int32_t>* _const;
         std::map<std::string, int32_t> g_var;//仅做全局变量为空时迭代器所指的地方
         std::map<std::string, int32_t> g_unit_var;
         std::map<std::string, int32_t> g_const;
         std::vector<std::string> localVars;
+        std::vector<std::map<std::string, int32_t>*> _var_table;
+        std::vector<std::map<std::string, int32_t>*> _unit_table;
+        std::vector<std::map<std::string, int32_t>*> _const_table;
         bool isGlabol;
 
         void deleteVar(std::string basicString);
+
+        Function getFunc(int32_t index);
+
+        bool canbeDeclared(const std::string &s);
+
+        std::optional<CompilationError> analyseSingleLineComment();
+
+        std::optional<CompilationError> analyseMultiLineComment();
     };
 
 }

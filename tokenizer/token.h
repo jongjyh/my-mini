@@ -51,7 +51,10 @@ namespace miniplc0 {
 		LEFT_BRACKET,//(
 		RIGHT_BRACKET,//)
 		LEFT_BRACE,
-		RIGHT_BRACE
+		RIGHT_BRACE,
+		CHAR_LIT,
+		STRING_LIT,
+
 	};
 
 	class Token final {
@@ -68,6 +71,8 @@ namespace miniplc0 {
 			: _type(type), _value(std::move(value)), _start_pos(start_line, start_column), _end_pos(end_line, end_column) {}
 		Token(TokenType type, std::any value, std::pair<uint64_t, uint64_t> start, std::pair<uint64_t, uint64_t> end)
 			: Token(type, value, start.first, start.second, end.first, end.second) {}
+        Token(TokenType type, std::any value )
+                : _type(type),_value(std::move(value)) {}
 		Token(const Token& t) { _type = t._type;  _value = t._value; _start_pos = t._start_pos; _end_pos = t._end_pos; }
 		Token(Token&& t) : Token(TokenType::NULL_TOKEN, nullptr, 0, 0, 0, 0) { swap(*this, t); }
 		Token& operator=(Token t) { swap(*this, t); return *this; }

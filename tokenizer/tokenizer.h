@@ -40,7 +40,10 @@ namespace miniplc0 {
 			LEFTBRACKET_STATE,
 			RIGHTBRACKET_STATE,
             LEFTBRACE_STATE,
-            RIGHTBRACE_STATE
+            RIGHTBRACE_STATE,
+            SIGQUT_STATE,
+            DOUQUT_STATE,
+            BACKSLASH_STATE,
 		};
 	public:
 		Tokenizer(std::istream& ifs)
