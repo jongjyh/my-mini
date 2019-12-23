@@ -10,7 +10,7 @@
 #include "analyser/analyser.h"
 
 
-void printOperation(miniplc0::Instruction &instruction);
+inline void printOperation(miniplc0::Instruction &instruction,std::ostream &);
 
 std::vector<miniplc0::Token> _tokenize(std::istream &input) {
     miniplc0::Tokenizer tkz(input);
@@ -42,9 +42,9 @@ void Binary(std::istream &input, std::ostream &output) {
     std::vector<miniplc0::Function> funlist = v.getFunctionList();
     std::vector<miniplc0::Instruction> beginCode = v.getBeginCode();
     std::vector<std::vector<miniplc0::Instruction>> program = v.getProgramList();
-    fmt::print("{:032b}",0x43303a29);
-    fmt::print("{:032b}",0x1);
-    fmt::print("{:016b}",Consts.size());
+    output<<fmt::format("{:032b}",0x43303a29);
+    output<<fmt::format("{:032b}",0x1);
+    output<<fmt::format("{:016b}",Consts.size());
     for(int i=0;i<Consts.size();i++)
     {
         int type,length;
@@ -53,9 +53,9 @@ void Binary(std::istream &input, std::ostream &output) {
         else
             type=0;//String
         //type 8
-        fmt::print("{:08b}",type);
+        output<<fmt::format("{:08b}",type);
         //length 16
-        fmt::print("{:016b}",Consts.at(i).first.length());
+        output<<fmt::format("{:016b}",Consts.at(i).first.length());
         //value 一个char 8位
         if(type==1)
         {
@@ -63,34 +63,34 @@ void Binary(std::istream &input, std::ostream &output) {
             ss<<Consts.at(i).first;
             int32_t num;
             ss>>num;
-            fmt::print("{:032b}",num);
+            output<<fmt::format("{:032b}",num);
         }
         else{
             for(auto it:Consts.at(i).first)
-                fmt::print("{:08b}",it);
+                output<<fmt::format("{:08b}",it);
         }
 
     }
     for(auto it:beginCode)
-        printOperation(it);
+        printOperation(it,output);
     for(int i=0;i<funlist.size();i++)
     {
         //nameindex 16
-        fmt::print("{:016b}",funlist[i].nameindex);
+        output<<fmt::format("{:016b}",funlist[i].nameindex);
         //params_len 16
-        fmt::print("{:016b}",funlist[i].getParaSize());
+        output<<fmt::format("{:016b}",funlist[i].getParaSize());
         //level 16
-        fmt::print("{:016b}",funlist[i].level);
+        output<<fmt::format("{:016b}",funlist[i].level);
         //ins_count 16
-        fmt::print("{:016b}",program[i+1].size());
+        output<<fmt::format("{:016b}",program[i+1].size());
         for(auto it:program[i+1])
         {
-            printOperation(it);
+            printOperation(it,output);
         }
     }
 }
 
-void printOperation(miniplc0::Instruction &instruction) {
+inline void printOperation(miniplc0::Instruction &instruction,std::ostream &output) {
     int ope,num=1;
     switch(instruction.GetOperation())
     {
@@ -107,21 +107,21 @@ void printOperation(miniplc0::Instruction &instruction) {
         case miniplc0::ISCAN:ope=0xb0;num=1;break;
         case miniplc0::POP:ope=0x04;num=1;break;
         case miniplc0::I2C:ope=0x62;num=1;break;
-        case miniplc0::CALL:ope=0x80;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::POPN:ope=0x06;num=2; fmt::print("{:08b}{:032b}",ope,instruction.GetX());break;
-        case miniplc0::LOADC:ope=0x09;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::IPUSH:ope=0x02;num=2;fmt::print("{:08b}{:032b}",ope,instruction.GetX());break;
-        case miniplc0::JE:ope=0x71;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JNE:ope=0x72;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JMP:ope=0x70;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JL:ope=0x73;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JLE:ope=0x76;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JG:ope=0x75;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::JGE:ope=0x74;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
-        case miniplc0::LOADA:ope=0x0a;num=3;fmt::print("{:08b}{:016b}{:032b}",ope,instruction.GetX(),instruction.GetY());break;
+        case miniplc0::CALL:ope=0x80;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::POPN:ope=0x06;num=2;output<<fmt::format("{:08b}{:032b}",ope,instruction.GetX());break;
+        case miniplc0::LOADC:ope=0x09;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::IPUSH:ope=0x02;num=2;output<<fmt::format("{:08b}{:032b}",ope,instruction.GetX());break;
+        case miniplc0::JE:ope=0x71;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JNE:ope=0x72;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JMP:ope=0x70;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JL:ope=0x73;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JLE:ope=0x76;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JG:ope=0x75;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JGE:ope=0x74;num=2;output<<fmt::format("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::LOADA:ope=0x0a;num=3;output<<fmt::format("{:08b}{:016b}{:032b}",ope,instruction.GetX(),instruction.GetY());break;
     }
     if(num==1)
-    fmt::print("{:08b}",ope);
+        output<<fmt::format("{:08b}",ope);
 }
 
 void Analyse(std::istream &input, std::ostream &output) {
@@ -182,11 +182,11 @@ int main(int argc, char **argv) {
     program.add_argument("-s")
             .default_value(false)
             .implicit_value(true)
-            .help("perform syntactic analysis for the input file.");
+            .help("perform syntactic analysis for the input file and product is PCODE.");
     program.add_argument("-c")
             .default_value(false)
             .implicit_value(true)
-            .help("perform syntactic analysis for the input file.");
+            .help("perform syntactic analysis for the input file and product is binary file.");
     program.add_argument("-o", "--output")
             .required()
             .default_value(std::string("-"))
