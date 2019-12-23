@@ -336,7 +336,7 @@ namespace miniplc0 {
 
             TokenType generation()
             {
-                int level=var.isGlobal1(),index=var.getIndex();
+                int level=var.isGlobal1(),index=var.getIndex()-1;
                 _instructions.emplace_back(Operation::LOADA, level, index);//7
                 _instructions.emplace_back(Operation::ILOAD, 0);//1
                 insindex += 8;

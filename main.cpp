@@ -31,7 +31,6 @@ void Tokenize(std::istream &input, std::ostream &output) {
 
 void Binary(std::istream &input, std::ostream &output) {
     auto tks = _tokenize(input);
-
     miniplc0::Analyser analyser(tks);
     auto p = analyser.Analyse();
     if (p.second.has_value()) {
@@ -43,24 +42,20 @@ void Binary(std::istream &input, std::ostream &output) {
     std::vector<miniplc0::Function> funlist = v.getFunctionList();
     std::vector<miniplc0::Instruction> beginCode = v.getBeginCode();
     std::vector<std::vector<miniplc0::Instruction>> program = v.getProgramList();
-    output <<fmt::format("# magic\n");
-    fmt::print("{:08x}",0x43303a29);
-    fmt::print("\n# version\n");
-    fmt::print("{:08x}",0x1);
-    fmt::print("\n# constants_count\n");
-    fmt::print("{:04x}",Consts.size());
+    fmt::print("{:032b}",0x43303a29);
+    fmt::print("{:032b}",0x1);
+    fmt::print("{:016b}",Consts.size());
     for(int i=0;i<Consts.size();i++)
     {
-        fmt::print("\n# constants[{}]\n",i);
         int type,length;
         if(Consts.at(i).second==0)
             type=1;//INT
         else
             type=0;//String
         //type 8
-        fmt::print("{:02x}\n",type);
+        fmt::print("{:08b}",type);
         //length 16
-        fmt::print("{:04x}\n",Consts.at(i).first.length());
+        fmt::print("{:016b}",Consts.at(i).first.length());
         //value 一个char 8位
         if(type==1)
         {
@@ -68,32 +63,27 @@ void Binary(std::istream &input, std::ostream &output) {
             ss<<Consts.at(i).first;
             int32_t num;
             ss>>num;
-            fmt::print("{:08x}\n",num);
+            fmt::print("{:032b}",num);
         }
         else{
             for(auto it:Consts.at(i).first)
-                fmt::print("{:02x} ",it);
-            fmt::print("\n");
+                fmt::print("{:08b}",it);
         }
 
     }
-    fmt::print("\n# start_code\n");
     for(auto it:beginCode)
         printOperation(it);
-    fmt::print("\n# functions_count\n");
     for(int i=0;i<funlist.size();i++)
     {
-        fmt::print("# function[{}]\n",i);
         //nameindex 16
-        fmt::print("{:04x}\n",funlist[i].nameindex);
+        fmt::print("{:016b}",funlist[i].nameindex);
         //params_len 16
-        fmt::print("{:04x}\n",funlist[i].getParaSize());
+        fmt::print("{:016b}",funlist[i].getParaSize());
         //level 16
-        fmt::print("{:04x}\n",funlist[i].level);
+        fmt::print("{:016b}",funlist[i].level);
         //ins_count 16
-        fmt::print("{:04x}\n",program[i].size());
-        fmt::print("function[{]].instructions\n",i);
-        for(auto it:program[i])
+        fmt::print("{:016b}",program[i+1].size());
+        for(auto it:program[i+1])
         {
             printOperation(it);
         }
@@ -101,41 +91,37 @@ void Binary(std::istream &input, std::ostream &output) {
 }
 
 void printOperation(miniplc0::Instruction &instruction) {
-    int ope,x,y,z;
+    int ope,num=1;
     switch(instruction.GetOperation())
     {
-        case miniplc0::ILOAD:ope=0x10;
-        case miniplc0::ISTORE:ope=0x20;
-        case miniplc0::IADD:ope=0x30;
-        case miniplc0::ISUB:ope=0x34;
-        case miniplc0::IMUL:ope=0x38;
-        case miniplc0::INEG:ope=0x40;
-        case miniplc0::IDIV:ope=0x3c;
-        case miniplc0::RET:ope=0x88;
-        case miniplc0::IRET:ope=0x89;
-        case miniplc0::IPRINT:ope=0xa0;
-        case miniplc0::ISCAN:ope=0xb0;
-        case miniplc0::POP:ope=0x04;
-        case miniplc0::I2C:ope=0x62;
-            fmt::print("{:04x}\n",ope);
-            break;
-        case miniplc0::CALL:ope=0x80;
-        case miniplc0::POPN:ope=0x06;
-        case miniplc0::LOADC:ope=0x06;
-        case miniplc0::IPUSH:ope=0x02;
-        case miniplc0::JE:ope=0x71;
-        case miniplc0::JNE:ope=0x72;
-        case miniplc0::JMP:ope=0x70;
-        case miniplc0::JL:ope=0x73;
-        case miniplc0::JLE:ope=0x76;
-        case miniplc0::JG:ope=0x75;
-        case miniplc0::JGE:ope=0x74;
-            fmt::print("{:04x} {:04x}\n",ope,instruction.GetX());
-            break;
-        case miniplc0::LOADA:
-            fmt::print("{:04x} {:04x} {:04x}\n",ope,instruction.GetX(),instruction.GetY());
-            break;
+        case miniplc0::ILOAD:ope=0x10;num=1;break;
+        case miniplc0::ISTORE:ope=0x20;num=1;break;
+        case miniplc0::IADD:ope=0x30;num=1;break;
+        case miniplc0::ISUB:ope=0x34;num=1;break;
+        case miniplc0::IMUL:ope=0x38;num=1;break;
+        case miniplc0::INEG:ope=0x40;num=1;break;
+        case miniplc0::IDIV:ope=0x3c;num=1;break;
+        case miniplc0::RET:ope=0x88;num=1;break;
+        case miniplc0::IRET:ope=0x89;num=1;break;
+        case miniplc0::IPRINT:ope=0xa0;num=1;break;
+        case miniplc0::ISCAN:ope=0xb0;num=1;break;
+        case miniplc0::POP:ope=0x04;num=1;break;
+        case miniplc0::I2C:ope=0x62;num=1;break;
+        case miniplc0::CALL:ope=0x80;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::POPN:ope=0x06;num=2; fmt::print("{:08b}{:032b}",ope,instruction.GetX());break;
+        case miniplc0::LOADC:ope=0x09;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::IPUSH:ope=0x02;num=2;fmt::print("{:08b}{:032b}",ope,instruction.GetX());break;
+        case miniplc0::JE:ope=0x71;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JNE:ope=0x72;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JMP:ope=0x70;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JL:ope=0x73;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JLE:ope=0x76;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JG:ope=0x75;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::JGE:ope=0x74;num=2;fmt::print("{:08b}{:016b}",ope,instruction.GetX());break;
+        case miniplc0::LOADA:ope=0x0a;num=3;fmt::print("{:08b}{:016b}{:032b}",ope,instruction.GetX(),instruction.GetY());break;
     }
+    if(num==1)
+    fmt::print("{:08b}",ope);
 }
 
 void Analyse(std::istream &input, std::ostream &output) {
