@@ -1,5 +1,9 @@
+int g0 = 42;
 
 int fun(int num) {
-print('1','2');
+    return -num;
+}
 
+int main() {
+    return fun(-123456);
 }

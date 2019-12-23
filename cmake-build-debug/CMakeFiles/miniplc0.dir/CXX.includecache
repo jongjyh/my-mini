@@ -155,6 +155,8 @@ iostream
 -
 fstream
 -
+analyser/analyser.h
+E:/my-mini/analyser/analyser.h
 
 E:/my-mini/tokenizer/tokenizer.h
 tokenizer/token.h

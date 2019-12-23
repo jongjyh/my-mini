@@ -27,7 +27,7 @@ namespace miniplc0 {
 		POP,
 		JE,
 		JNE,
-		JMP, JG, JL, JGE, JLE
+		JMP, JG, JL, JGE, JLE,I2C
     };
 	
 	class Instruction final {

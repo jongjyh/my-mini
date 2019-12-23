@@ -184,33 +184,47 @@ namespace miniplc0 {
 			    // \'
 			    case SIGQUT_STATE:{
                         auto ch=current_char;
-                        if(ch.has_value() && ch != '\\' &&ch !='\'') {
-                            ss << ch.value();
-                            ch = nextChar();
-                        }
+
+                        if(ch=='\'')
+                            return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, 0, pos, currentPos()), std::optional<CompilationError>());
+                        int32_t ans=ch.value();
+
                         if(!ch.has_value())
                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
-                        // '//'
-                        if(ch=='\'')
-                            return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, ss.str(), pos, currentPos()), std::optional<CompilationError>());
-                        ch=nextChar();
-                        if(!ch.has_value())
-                            return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
-                        switch(ch.value())
-                        {
-                            case 't':ss<<'\t';break;
-                            case 'n':ss<<'\n';break;
-                            case '\"':ss<<'\"';break;
-                            case '\'':ss<<'\'';break;
-                            case '\\':ss<<'\\';break;
-                            case 'r':ss<<'\r';break;
-                            default: return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                        if(ch.value()=='\\') {
+                            ch=nextChar();
+                            if(!ch.has_value())
+                                return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
+                            switch (ch.value()) {
+                                case 't':
+                                    ans= '\t';
+                                    break;
+                                case 'n':
+                                    ans= '\n';
+                                    break;
+                                case '\"':
+                                    ans= '\"';
+                                    break;
+                                case '\'':
+                                    ans= '\'';
+                                    break;
+                                case '\\':
+                                    ans= '\\';
+                                    break;
+                                case 'r':
+                                    ans= '\r';
+                                    break;
+                                default:
+                                    return std::make_pair(std::optional<Token>(),std::make_optional<CompilationError>(pos,ErrorCode::ErrInvalidInput));
+                            }
                         }
-                    ch=nextChar();
-                        if(!ch.has_value()||ch.value()!='\'')
+                        else
+                        ans=ch.value();
+                        ch=nextChar();
+                        if(ch.value()!='\'')
                             return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
 
-                    return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, ss.str(), pos, currentPos()), std::optional<CompilationError>());
+                    return std::make_pair(std::make_optional<Token>(TokenType::CHAR_LIT, ans, pos, currentPos()), std::optional<CompilationError>());
 			    }
 			    // \"
                 case DOUQUT_STATE:{
@@ -561,7 +575,7 @@ namespace miniplc0 {
                      */
                     auto ch = current_char.value();
                     if(ch == '=')
-                        std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, std::string("=="), pos, currentPos()),
+                        return std::make_pair(std::make_optional<Token>(TokenType::IS_EQU_SIGN, std::string("=="), pos, currentPos()),
                                        std::optional<CompilationError>());
                     unreadLast();
                     return std::make_pair(std::make_optional<Token>(TokenType::EQUAL_SIGN, '=', pos, currentPos()),

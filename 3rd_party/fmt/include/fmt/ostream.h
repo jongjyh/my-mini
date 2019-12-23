@@ -46,7 +46,9 @@ template <class Char> class formatbuf : public std::basic_streambuf<Char> {
 
 template <typename Char> struct test_stream : std::basic_ostream<Char> {
  private:
-  struct null;
+    test_stream() {}
+
+    struct null;
   // Hide all operator<< from std::basic_ostream<Char>.
   void operator<<(null);
 };
@@ -98,7 +100,9 @@ void format_value(buffer<Char>& buf, const T& value) {
 template <typename T, typename Char>
 struct fallback_formatter<T, Char, enable_if_t<is_streamable<T, Char>::value>>
     : formatter<basic_string_view<Char>, Char> {
-  template <typename Context>
+    fallback_formatter() {}
+
+    template <typename Context>
   auto format(const T& value, Context& ctx) -> decltype(ctx.out()) {
     basic_memory_buffer<Char> buffer;
     format_value(buffer, value);

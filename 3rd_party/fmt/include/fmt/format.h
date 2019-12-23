@@ -2157,7 +2157,9 @@ template <typename Char> struct arg_ref {
 // different sets of arguments (precompilation of format strings).
 template <typename Char>
 struct dynamic_format_specs : basic_format_specs<Char> {
-  arg_ref<Char> width_ref;
+    dynamic_format_specs() {}
+
+    arg_ref<Char> width_ref;
   arg_ref<Char> precision_ref;
 };
 
@@ -3041,7 +3043,9 @@ FMT_FORMAT_AS(internal::std_string_view<Char>, basic_string_view<Char>);
 
 template <typename Char>
 struct formatter<void*, Char> : formatter<const void*, Char> {
-  template <typename FormatContext>
+    formatter() {}
+
+    template <typename FormatContext>
   auto format(void* val, FormatContext& ctx) -> decltype(ctx.out()) {
     return formatter<const void*, Char>::format(val, ctx);
   }
@@ -3049,7 +3053,9 @@ struct formatter<void*, Char> : formatter<const void*, Char> {
 
 template <typename Char, size_t N>
 struct formatter<Char[N], Char> : formatter<basic_string_view<Char>, Char> {
-  template <typename FormatContext>
+    formatter() {}
+
+    template <typename FormatContext>
   auto format(const Char* val, FormatContext& ctx) -> decltype(ctx.out()) {
     return formatter<basic_string_view<Char>, Char>::format(val, ctx);
   }
@@ -3230,7 +3236,9 @@ template <typename It, typename Char> struct arg_join : internal::view {
 template <typename It, typename Char>
 struct formatter<arg_join<It, Char>, Char>
     : formatter<typename std::iterator_traits<It>::value_type, Char> {
-  template <typename FormatContext>
+    formatter() {}
+
+    template <typename FormatContext>
   auto format(const arg_join<It, Char>& value, FormatContext& ctx)
       -> decltype(ctx.out()) {
     using base = formatter<typename std::iterator_traits<It>::value_type, Char>;

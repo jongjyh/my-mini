@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include "analyser/analyser.h"
 std::vector<miniplc0::Token> _tokenize(std::istream& input) {
 	miniplc0::Tokenizer tkz(input);
 	auto p = tkz.AllTokens();
@@ -60,7 +60,7 @@ void Analyse(std::istream& input, std::ostream& output){
     output << fmt::format(".functions:\n");
 
     for(int i=0;i<funlist.size();i++){
-        output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex-1,funlist[i].para,funlist[i].level);
+        output << fmt::format("\t{} {} {} {}\n", i,funlist[i].nameindex,funlist[i].getParaSize(),funlist[i].level);
     }
 
     output << fmt::format("\n");

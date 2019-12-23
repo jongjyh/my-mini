@@ -122,6 +122,12 @@ namespace fmt {
 			    case miniplc0::ErrTooBigForChar:
 			        name = "char is overfloat";
 			        break;
+			    case miniplc0::ErrNoMain:
+                    name = "No main function";
+                    break;
+			    case miniplc0::ErrVOIDBEVALUE:
+                    name = "Function has no return;";
+                    break;
 			}
 			return format_to(ctx.out(), name);
 		}
@@ -310,6 +316,9 @@ namespace fmt {
 			case miniplc0::LOADA:
 				name = "loada";
 				break;
+                case miniplc0::I2C:
+                    name = "i2c";
+                    break;
 			case miniplc0::LOADC:
 				name = "loadc";
 				break;
@@ -409,6 +418,7 @@ namespace fmt {
             case miniplc0::IPRINT:
             case miniplc0::ISCAN:
             case miniplc0::POP:
+            case miniplc0::I2C:
 				return format_to(ctx.out(), "{}", p.GetOperation());
 			case miniplc0::CALL:
 			case miniplc0::POPN:

@@ -51,7 +51,9 @@ namespace miniplc0 {
         ErrVariableCall,//变量当函数调用
         ErrReturn,//fanhuicuowu
         ErrIncompleteWhileStatement, ErrWrongCallParameter, ErrinvalidExpression, ErrCommentNoEnd, ErrEmptyRelationExp,
-        ErrTooBigForChar
+        ErrTooBigForChar,
+        ErrNoMain,
+        ErrVOIDBEVALUE
     };
 
 	class CompilationError final{
