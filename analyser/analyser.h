@@ -448,6 +448,8 @@ namespace miniplc0 {
         };
 
         std::pair<std::optional<TokenType>, std::optional<CompilationError>> analyseConvert();
+
+        int32_t getLoacalVarNum();
     };
 
 }

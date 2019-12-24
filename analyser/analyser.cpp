@@ -96,7 +96,7 @@ namespace miniplc0 {
             auto err = analyseCompoundStatement();
             if (err.has_value())
                 return err;
-            _instructions.emplace_back(POPN,_var->size());
+
             _instructions.emplace_back(RET,0);
         }
     }
@@ -245,7 +245,7 @@ namespace miniplc0 {
                         return {};
                     }
                 }
-
+                //LOADA
                 if (next.value().GetType() == TokenType::EQUAL_SIGN) {
 
                     // '<表达式>'
@@ -277,7 +277,6 @@ namespace miniplc0 {
                         return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrAssignToConstant);
                     addUninitializedVariable(var, type);
                     _instructions.emplace_back(Operation::IPUSH, 0);
-                    insindex += 5;
                 }
                 // ','
                 if (next.value().GetType() == TokenType::COMMA) {
@@ -317,7 +316,9 @@ namespace miniplc0 {
         next = nextToken();
         if (!next.has_value() || next.value().GetType() != RIGHT_BRACE)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrFuctionBrace);
+        _instructions.emplace_back(POPN,getLoacalVarNum());
         popCurrentLevel();
+
         return {};
     }
 
@@ -476,7 +477,7 @@ namespace miniplc0 {
              next.value().GetType() != IS_EQU_SIGN &&
              next.value().GetType() != NOT_EQU_SIGN)) {
             unreadToken();
-            _instructions.emplace_back(Operation::JNE, 0);
+            _instructions.emplace_back(Operation::JE, 0);
             return std::make_pair(_instructions.size()-1,std::optional<CompilationError>());
         }
 
@@ -793,7 +794,7 @@ namespace miniplc0 {
             _instructions.emplace_back(Operation::POPN, _nextTokenIndex);//5
             _instructions.emplace_back(Operation::RET, 0);//1
             insindex += 6;
-        } else if (prefix == 1 && returntype != VOID) {
+        } else if (prefix == 1 && returntype != VOID&&type!=VOID) {
             if(returntype==CHAR &&type==INT)
             {
                 insindex++;
@@ -1289,6 +1290,15 @@ namespace miniplc0 {
     TokenType Analyser::getType(std::string &var) {
         getIndex(var);
     }
-
+    int32_t Analyser::getLoacalVarNum()
+    {
+        int num=0;
+        for(auto it :*_var)
+        {
+            if(it.second.getIndex()!=0)
+                num++;
+        }
+        return num;
+    }
 
 }
