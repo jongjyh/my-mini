@@ -251,6 +251,9 @@ namespace miniplc0 {
                     if (err.second.has_value())
                         return err.second;
                     auto rettype=err.first.value()->generation();
+                    if(rettype==VOID)
+                        return std::make_optional<CompilationError>(_current_pos,
+                                                                    ErrorCode::ErrVOIDBEVALUE);
                     if(rettype==INT&&type==CHAR)
                         _instructions.emplace_back(I2C,0);
 
@@ -878,16 +881,57 @@ namespace miniplc0 {
     }
 
 
-    // <项> :: = <因子>{ <乘法型运算符><因子> }
 
+    std::pair<std::optional<TokenType>, std::optional<CompilationError>> Analyser::analyseConvert(){
+        auto next=nextToken();
+        TokenType Convert=NULL_TOKEN;
+        if(!next.has_value())
+            return std::make_pair(std::optional<TokenType >(), std::make_optional<CompilationError>(_current_pos,
+                                                                                              ErrorCode::ErrIncompleteExpression));
+        if(next.value().GetType()==LEFT_BRACKET)
+        {
+            next= nextToken();
+            if(!next.has_value())
+                return std::make_pair(std::optional<TokenType>(), std::make_optional<CompilationError>(_current_pos,
+                                                                                                  ErrorCode::ErrIncompleteExpression));
+            if(next.value().GetType()==VOID)
+                return std::make_pair(std::optional<TokenType>(), std::make_optional<CompilationError>(_current_pos,
+                                                                                                  ErrorCode::ErrConvertToVOID));
+            if(next.value().GetType()!=CHAR&&next.value().GetType()!=INT)
+            {
+                unreadToken();
+                unreadToken();
+                return {};
+            }
+            Convert=next.value().GetType();
+            next= nextToken();
+            if(!next.has_value()||next.value().GetType()!=RIGHT_BRACKET)
+                return std::make_pair(std::optional<TokenType >(), std::make_optional<CompilationError>(_current_pos,
+                                                                                                  ErrorCode::ErrNoBracket));
+        }
+        else
+        {
+            unreadToken();
+            return {};
+        }
+        return  std::make_pair(Convert, std::optional<CompilationError>());
+    }
+    // <项> :: = <因子>{ <乘法型运算符><因子> }
     std::pair<std::optional<Analyser::Item>, std::optional<CompilationError>> Analyser::analyseItem() {
         // 可以参考 <表达式> 实现
         //因子
         std::vector<Factor *> factors;
         std::vector<TokenType> mul;
+        auto Cerr =analyseConvert();
+        if (Cerr.second.has_value())
+            return std::make_pair(std::optional<Item>(), Cerr.second);
+
         auto err = analyseFactor();
         if (err.second.has_value())
             return std::make_pair(std::optional<Item>(), err.second);
+
+        if(Cerr.first.has_value()&&Cerr.first.value()!=NULL_TOKEN)
+            err.first.value()->convert=Cerr.first.value();
         factors.emplace_back(err.first.value());
         //{ <乘法型运算符><因子> }
         while (true) {
@@ -901,10 +945,15 @@ namespace miniplc0 {
                 return std::make_pair(Item(factors,mul),std::optional<CompilationError>());
             }
 
+            Cerr =analyseConvert();
+            if (Cerr.second.has_value())
+                return std::make_pair(std::optional<Item>(), Cerr.second);
             //因子
             err = analyseFactor();
             if (err.second.has_value())
                 return std::make_pair(std::optional<Item>(), err.second);
+            if(Cerr.first.has_value()&&Cerr.first.value()!=NULL_TOKEN)
+                err.first.value()->convert=Cerr.first.value();
             factors.emplace_back(err.first.value());
             // 根据结果生成指令
             mul.emplace_back(type);

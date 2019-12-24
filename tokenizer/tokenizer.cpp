@@ -196,6 +196,22 @@ namespace miniplc0 {
                             if(!ch.has_value())
                                 return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrInvalidInput));
                             switch (ch.value()) {
+                                case 'X':
+                                case 'x':
+                                {
+                                    ch=nextChar();
+                                    std::stringstream hex;
+                                    hex<<"0x";
+                                    while(ch.has_value()&&(isdigit(ch.value())||(ch.value()>='a'&&ch.value()<='f')||(ch.value()>='A'&&ch.value()<='F')))
+                                    {hex<<ch.value();ch=nextChar();}
+                                    unreadLast();
+                                    long long num;
+                                    sscanf(hex.str().c_str(),"%x",&num);
+                                    if(num>255)
+                                        return std::make_pair(std::optional<Token>(), std::make_optional<CompilationError>(pos, ErrorCode::ErrTooBigForChar));
+                                    ans=num;
+                                    break;
+                                }
                                 case 't':
                                     ans= '\t';
                                     break;
@@ -253,7 +269,7 @@ namespace miniplc0 {
                                 ch=nextChar();
                                 std::stringstream hex;
                                 hex<<"0x";
-                                while(ch.has_value()&&isdigit(ch.value()))
+                                while(ch.has_value()&&(isdigit(ch.value())||(ch.value()>='a'&&ch.value()<='f')||(ch.value()>='A'&&ch.value()<='F')))
                                 {hex<<ch.value();ch=nextChar();}
                                 unreadLast();
                                 long long num;
@@ -330,11 +346,12 @@ namespace miniplc0 {
                 {
                     unreadLast();
                     long long  container;
-
+                    int Int;
                     sscanf(ss.str().c_str(), "%x", &container);
-                    if(container > 2147483647 )
+                    if(container > 4294967295 )
                         return std::make_pair(std::optional<Token>(),
                                               std::make_optional<CompilationError>(pos, ErrorCode::ErrIntegerOverflow));
+
                     int32_t  num=container;
                     return std::make_pair(
                             std::make_optional<Token>(TokenType::INTEGER, num, pos, currentPos()),

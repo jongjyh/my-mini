@@ -53,7 +53,8 @@ namespace miniplc0 {
         ErrIncompleteWhileStatement, ErrWrongCallParameter, ErrinvalidExpression, ErrCommentNoEnd, ErrEmptyRelationExp,
         ErrTooBigForChar,
         ErrNoMain,
-        ErrVOIDBEVALUE
+        ErrVOIDBEVALUE,
+        ErrConvertToVOID
     };
 
 	class CompilationError final{

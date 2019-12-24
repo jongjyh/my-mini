@@ -126,7 +126,10 @@ namespace fmt {
                     name = "No main function";
                     break;
 			    case miniplc0::ErrVOIDBEVALUE:
-                    name = "Function has no return;";
+                    name = "right can't be a void value";
+                    break;
+			    case miniplc0::ErrConvertToVOID:
+                    name = "can't covert to VOID";
                     break;
 			}
 			return format_to(ctx.out(), name);

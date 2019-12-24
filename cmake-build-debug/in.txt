@@ -1,4 +1,8 @@
+void hello()
+{
 
+}
 int main() {
-    int a;
+int c=20;
+    char a = (int)c*(char)c;
 }

@@ -317,8 +317,10 @@ namespace miniplc0 {
         };
         struct Factor {
             TokenType  sign;
-
+            TokenType  convert;
             Factor(TokenType sign) : sign(sign) {}
+
+            Factor(TokenType sign, TokenType convert) : sign(sign), convert(convert) {}
 
             virtual  TokenType generation(){
                 if(sign==MINUS_SIGN)
@@ -326,6 +328,10 @@ namespace miniplc0 {
                     insindex+=1;
                     _instructions.emplace_back(Operation::INEG, 0);
                 }
+                if(convert==CHAR)
+                    _instructions.emplace_back(Operation::I2C, 0);
+                if(convert!=NULL_TOKEN)
+                    return convert;
                 return TokenType ::NULL_TOKEN;
             }
         };
@@ -340,7 +346,9 @@ namespace miniplc0 {
                 _instructions.emplace_back(Operation::LOADA, level, index);//7
                 _instructions.emplace_back(Operation::ILOAD, 0);//1
                 insindex += 8;
-                Factor::generation();
+                auto convert=Factor::generation();
+                if(convert!=NULL_TOKEN)
+                    return convert;
                 return var.getType();
             }
         };
@@ -353,7 +361,9 @@ namespace miniplc0 {
             {
                 _instructions.emplace_back(Operation::LOADC, index);
                 insindex+=3;
-                Factor::generation();
+                auto convert=Factor::generation();
+                if(convert!=NULL_TOKEN)
+                    return convert;
                 return INT;
             }
         };
@@ -367,7 +377,9 @@ namespace miniplc0 {
             TokenType  generation(){
                 if(items.size()==1)
                 {
-                    Factor::generation();
+                    auto convert=Factor::generation();
+                    if(convert!=NULL_TOKEN)
+                        return convert;
                     return items[0].generation();
                 }
                 for(int i=0;i<add.size();i++)
@@ -385,7 +397,9 @@ namespace miniplc0 {
                         _instructions.emplace_back(Operation::IADD, 0);
                     }
                 }
-                Factor::generation();
+                auto convert=Factor::generation();
+                if(convert!=NULL_TOKEN)
+                    return convert;
                 return INT;
             }
         };
@@ -406,7 +420,9 @@ namespace miniplc0 {
                 {
                     auto type = exps[i]->generation();
                 }
-                Factor::generation();
+                auto convert=Factor::generation();
+                if(convert!=NULL_TOKEN)
+                    return convert;
 
                 _instructions.emplace_back(Operation::CALL,index);
                 return function.getRet();
@@ -419,10 +435,15 @@ namespace miniplc0 {
             {
                 _instructions.emplace_back(Operation::LOADC, index);
                 insindex+=3;
-                Factor::generation();
+
+                auto convert=Factor::generation();
+                if(convert!=NULL_TOKEN)
+                    return convert;
                 return CHAR;
             }
         };
+
+        std::pair<std::optional<TokenType>, std::optional<CompilationError>> analyseConvert();
     };
 
 }
