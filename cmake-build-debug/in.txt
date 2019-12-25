@@ -3,6 +3,6 @@ void hello()
 
 }
 int main() {
-int c=20;
-    char a = (int)c*(char)c;
+if(0)
+hello();
 }

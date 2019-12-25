@@ -255,7 +255,10 @@ namespace miniplc0 {
                         return std::make_optional<CompilationError>(_current_pos,
                                                                     ErrorCode::ErrVOIDBEVALUE);
                     if(rettype==INT&&type==CHAR)
+                    {
+                        insindex++;
                         _instructions.emplace_back(I2C,0);
+                    }
 
                     next = nextToken();
                     /*
@@ -470,7 +473,10 @@ namespace miniplc0 {
              next.value().GetType() != IS_EQU_SIGN &&
              next.value().GetType() != NOT_EQU_SIGN)) {
             unreadToken();
-            return std::make_optional(CompilationError(_current_pos, ErrorCode::ErrEmptyRelationExp));
+            insindex+=3;
+            _instructions.emplace_back(Operation::JNE, insindex + 3);
+
+            return {};
         }
 
         err = analyseExpression();
@@ -544,7 +550,6 @@ namespace miniplc0 {
         next = nextToken();
         _instructions[jmp].SetX(insindex);
         if (!next.has_value() || next.value().GetType() != ELSE) {
-
             unreadToken();
             return {};
         }
@@ -776,7 +781,10 @@ namespace miniplc0 {
             insindex += 6;
         } else if (prefix == 1 && returntype != VOID) {
             if(returntype==CHAR &&type==INT)
+            {
+                insindex++;
                 _instructions.emplace_back(Operation::I2C, 0);
+            }
             _instructions.emplace_back(Operation::IRET, 0);
             insindex += 1;
         } else
@@ -873,7 +881,10 @@ namespace miniplc0 {
         if(rettype==VOID)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrVOIDBEVALUE);
         if(var.getType()==CHAR&&rettype==INT)
+        {
+            insindex++;
             _instructions.emplace_back(Operation::I2C, 0);
+        }
         _instructions.emplace_back(Operation::ISTORE, 0);//1
         insindex += 1;
 

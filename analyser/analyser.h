@@ -329,7 +329,10 @@ namespace miniplc0 {
                     _instructions.emplace_back(Operation::INEG, 0);
                 }
                 if(convert==CHAR)
+                {
+                    ++insindex;
                     _instructions.emplace_back(Operation::I2C, 0);
+                }
                 if(convert!=NULL_TOKEN)
                     return convert;
                 return TokenType ::NULL_TOKEN;
@@ -425,6 +428,7 @@ namespace miniplc0 {
                     return convert;
 
                 _instructions.emplace_back(Operation::CALL,index);
+                insindex+=3;
                 return function.getRet();
             }
         };
