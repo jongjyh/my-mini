@@ -258,6 +258,7 @@ namespace miniplc0 {
                     {
                         insindex++;
                         _instructions.emplace_back(I2C,0);
+
                     }
 
                     next = nextToken();

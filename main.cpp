@@ -142,10 +142,15 @@ void Analyse(std::istream &input, std::ostream &output) {
     for (int i = 0; i < Consts.size(); i++) {
         std::string INT = "I", STR = "S", type, value = Consts[i].first;
         if (Consts[i].second == 0)
-            type = INT;
-        else
-            type = STR;
-        output << fmt::format("\t{} {} {}\n", i, type, value);
+        {
+            type = INT;output << fmt::format("\t{} {} {}\n", i, type, value);
+        }
+        else{
+            type = STR;output << fmt::format("\t{} {} \"{}\"\n", i, type, value);
+        }
+
+
+
     }
     output << fmt::format("\n");
     output << fmt::format(".start:\n");

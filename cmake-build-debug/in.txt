@@ -3,6 +3,6 @@ void hello()
 
 }
 int main() {
-if(0)
-hello();
+if(1)
+print(2);
 }
