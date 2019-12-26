@@ -197,7 +197,7 @@ namespace miniplc0 {
         //返回语句
         std::optional<CompilationError> analyseReturnStatement();
         //条件表达式
-        std::optional<CompilationError> analyseConditionExp();
+        std::pair<std::optional<int32_t >,std::optional<CompilationError>> analyseConditionExp();
 		// Token 缓冲区相关操作
 
 		// 返回下一个 token

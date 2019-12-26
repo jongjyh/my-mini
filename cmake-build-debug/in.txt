@@ -1,8 +1,7 @@
-void hello()
-{
 
-}
 int main() {
-if(1)
-print(2);
+int a=10;
+while(a>=0)
+print(a);
+
 }

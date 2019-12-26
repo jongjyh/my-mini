@@ -96,6 +96,8 @@ namespace miniplc0 {
             auto err = analyseCompoundStatement();
             if (err.has_value())
                 return err;
+            _instructions.emplace_back(POPN,_var->size());
+            _instructions.emplace_back(RET,0);
         }
     }
 
@@ -460,10 +462,10 @@ namespace miniplc0 {
      * <condition> ::=
      * <expression>[<relational-operator><expression>]
      */
-    std::optional<CompilationError> Analyser::analyseConditionExp() {
+    std::pair<std::optional<int32_t >,std::optional<CompilationError>> Analyser::analyseConditionExp() {
         auto err = analyseExpression();
         if (err.second.has_value())
-            return err.second;
+            return std::make_pair(std::optional<int32_t>(),err.second);
         err.first.value()->generation();
         auto next = nextToken();
         if (!next.has_value() ||
@@ -474,53 +476,51 @@ namespace miniplc0 {
              next.value().GetType() != IS_EQU_SIGN &&
              next.value().GetType() != NOT_EQU_SIGN)) {
             unreadToken();
-            insindex+=3;
-            _instructions.emplace_back(Operation::JNE, insindex + 3);
-
-            return {};
+            _instructions.emplace_back(Operation::JNE, 0);
+            return std::make_pair(_instructions.size()-1,std::optional<CompilationError>());
         }
 
         err = analyseExpression();
         if (err.second.has_value())
-            return err.second;
+            return std::make_pair(std::make_optional(int32_t()),err.second);
         err.first.value()->generation();
         _instructions.emplace_back(Operation::ISUB, 0);
         insindex += 1;
         insindex += 3;
         // >
         if (next.value().GetType() == GREATER_THAN_SIGN)
-            _instructions.emplace_back(Operation::JG, insindex + 3);
+            _instructions.emplace_back(Operation::JLE, 0);
             // <
         else if (next.value().GetType() == LESS_THAN_SIGN)
-            _instructions.emplace_back(Operation::JL, insindex + 3);
+            _instructions.emplace_back(Operation::JGE, 0);
 
             // >= finish
         else if (next.value().GetType() == GRT_EQU_SIGN)
-            _instructions.emplace_back(Operation::JGE, insindex + 3);
+            _instructions.emplace_back(Operation::JL, 0);
             // <= finish
         else if (next.value().GetType() == LES_EQU_SIGN)
-            _instructions.emplace_back(Operation::JLE, insindex + 3);
+            _instructions.emplace_back(Operation::JG, 0);
             // ==
         else if (next.value().GetType() == IS_EQU_SIGN)
-            _instructions.emplace_back(Operation::JE, insindex + 3);
+            _instructions.emplace_back(Operation::JNE, 0);
             // != finish
         else if (next.value().GetType() == NOT_EQU_SIGN)
-            _instructions.emplace_back(Operation::JNE, insindex + 3);
+            _instructions.emplace_back(Operation::JE, 0);
 
-        return std::optional<CompilationError>();
-        return {};
+        return std::make_pair(_instructions.size()-1,std::optional<CompilationError>());
     }
 
     /*
      * 条件语句
      * <condition-statement> ::=
      * 'if' '(' <condition> ')' <statement> ['else' <statement>]
-     * JCOND s0
-     * jmp s1
+     * JCOND s1
      * s0:
      * ifstmt
+     * jmp s2
      * s1:
      * elsestmt
+     * s2
      */
     std::optional<CompilationError> Analyser::analyseConditionStatement() {
         auto next = nextToken();
@@ -532,33 +532,35 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //condition
         auto err = analyseConditionExp();
-        if (err.has_value())
-            return err;
-
-        _instructions.emplace_back(Operation::JMP, 0);//1
-        insindex += 3;
-        int jmp = _instructions.size() - 1;
-        //s1意义如上
+        if (err.second.has_value())
+            return err.second;
+        int jcond=err.first.value();
         //')'
         next = nextToken();
         if (!next.has_value() || next.value().GetType() != RIGHT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
-        //statement
-        err = analyseStatement();
-        if (err.has_value())
-            return err;
+        //ifstatement
+        auto Serr = analyseStatement();
+        if (Serr.has_value())
+            return Serr;
+        //if成立，并且执行完state跳到elsesta下边
+        _instructions.emplace_back(JMP,0);
+        int jmps2=_instructions.size()-1;
+        //if不成立跳到这里
+        _instructions[jcond].SetX(_instructions.size());
         //'else'
         next = nextToken();
-        _instructions[jmp].SetX(insindex);
         if (!next.has_value() || next.value().GetType() != ELSE) {
+            _instructions[jmps2].SetX(_instructions.size());
             unreadToken();
             return {};
         }
-        //statement
-        //回填地址
-        err = analyseStatement();
-        if (err.has_value())
-            return err;
+
+        //elsestatement
+        Serr = analyseStatement();
+        if (Serr.has_value())
+            return Serr;
+        _instructions[jmps2].SetX(_instructions.size());
         return {};
     }
     //循环语句
@@ -567,10 +569,8 @@ namespace miniplc0 {
      * 'while' '(' <condition> ')' <statement>
      * 1求值<condition>
      * 2如果<condition>是false，跳转到步骤5
-     *  jcond s0
-     *
-     *  jmp s1
-     *  s0:0
+     *  s0:
+     *  jcond S1
      *  [statement]
      *  JMP S0
      *  S1:
@@ -588,27 +588,23 @@ namespace miniplc0 {
         if (!next.has_value() || next.value().GetType() != LEFT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         //<condition>
-        int s0 = insindex, s1;
+        int s0=_instructions.size();
         auto err = analyseConditionExp();
-        if (err.has_value())
-            return err;
-        _instructions.emplace_back(Operation::JMP, 0);
-        insindex += 3;
-        int jne = _instructions.size() - 1;
+        if (err.second.has_value())
+            return err.second;
+        int jcond=err.first.value();
         //')'
         next = nextToken();
         if (!next.has_value() || next.value().GetType() != RIGHT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
 
         //statement
-        err = analyseStatement();
-        if (err.has_value())
-            return err;
-        _instructions.emplace_back(Operation::JMP, s0);
-        insindex += 3;
-        //回填jne s1
-        s1 = insindex;
-        _instructions[jne].SetX(s1);
+        auto Serr = analyseStatement();
+        if (Serr.has_value())
+            return Serr;
+        //每次执行完返回s0重新判断
+        _instructions.emplace_back(JMP,s0);
+        _instructions[jcond].SetX(_instructions.size());
         return {};
 
     }
@@ -630,22 +626,27 @@ namespace miniplc0 {
 
         while (1) {
             next = nextToken();
+            TokenType type;
             if (!next.has_value())
                 return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidPrint);
             if (next.value().GetType() == TokenType::STRING_LIT || next.value().GetType() == TokenType::CHAR_LIT) {
                 if (!isBeenLoad(next.value()))
                     addCONST(next.value());
                 _instructions.emplace_back(LOADC, getConstIndex(next.value()));
-                insindex += 3;
+                _instructions.emplace_back(SPRINT, 0);
             } else {
                 unreadToken();
                 auto err = analyseExpression();
                 if (err.second.has_value())
                     return err.second;
-            }
+                type =err.first.value()->generation();
+
             next = nextToken();
+            if(type==INT)
             _instructions.emplace_back(IPRINT, 0);
-            insindex += 1;
+            else if(type==CHAR)
+                _instructions.emplace_back(CPRINT, 0);
+            }
             if (!next.has_value() || next.value().GetType() != COMMA) {
                 break;
             }
