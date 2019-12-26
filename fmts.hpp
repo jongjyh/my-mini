@@ -403,6 +403,9 @@ namespace fmt {
 			    case miniplc0::CSCAN:
 			        name = "cscan";
                     break;
+			    case miniplc0::PRINTL:
+                    name = "printl";
+                    break;
             }
 			return format_to(ctx.out(), name);
 		}
@@ -433,6 +436,7 @@ namespace fmt {
             case miniplc0::SPRINT:
             case miniplc0::CPRINT:
             case miniplc0::CSCAN:
+            case miniplc0::PRINTL:
 				return format_to(ctx.out(), "{}", p.GetOperation());
 			case miniplc0::CALL:
 			case miniplc0::POPN:

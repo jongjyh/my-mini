@@ -633,7 +633,10 @@ namespace miniplc0 {
                 if (!isBeenLoad(next.value()))
                     addCONST(next.value());
                 _instructions.emplace_back(LOADC, getConstIndex(next.value()));
+                if(next.value().GetType() == TokenType::STRING_LIT )
                 _instructions.emplace_back(SPRINT, 0);
+                else
+                    _instructions.emplace_back(CPRINT, 0);
                 next = nextToken();
             } else {
                 unreadToken();
@@ -651,7 +654,12 @@ namespace miniplc0 {
             if (!next.has_value() || next.value().GetType() != COMMA) {
                 break;
             }
+            //添加空格
+            _instructions.emplace_back(IPUSH,' ');
+            _instructions.emplace_back(CPRINT,0);
+
         }
+        _instructions.emplace_back(PRINTL,0);
         if (!next.has_value() || next.value().GetType() != RIGHT_BRACKET)
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrNoBracket);
         next = nextToken();
@@ -1010,6 +1018,7 @@ namespace miniplc0 {
                     return std::make_pair(std::optional<Analyser::Factor*>(),
                                           std::make_optional<CompilationError>(_current_pos,
                                                                                ErrorCode::ErrIncompleteExpression));
+                return std::make_pair(err.first,std::optional<CompilationError>());
                 break;
             }
             case TokenType::INTEGER: {

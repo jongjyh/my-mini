@@ -297,9 +297,9 @@ namespace miniplc0 {
                 {
                     return factors[0]->generation();
                 }
+                factors[0]->generation();
                 for(int i=0;i<mul.size();i++)
                 {
-                    factors[i]->generation();
                     factors[i+1]->generation();
                     if(mul[i]==DIVISION_SIGN)
                     {
@@ -318,7 +318,7 @@ namespace miniplc0 {
         struct Factor {
             TokenType  sign;
             TokenType  convert;
-            Factor(TokenType sign) : sign(sign) {}
+            Factor(TokenType sign) : sign(sign) {convert=NULL_TOKEN;}
 
             Factor(TokenType sign, TokenType convert) : sign(sign), convert(convert) {}
 
@@ -385,9 +385,9 @@ namespace miniplc0 {
                         return convert;
                     return items[0].generation();
                 }
+                items[0].generation();
                 for(int i=0;i<add.size();i++)
                 {
-                    items[i].generation();
                     items[i+1].generation();
                     if(add[i]==MINUS_SIGN)
                     {

@@ -1,4 +1,17 @@
-int a;
-int main() {
-print("hello\x20world","hello");
+int main(){
+	const int sdfsfa = 5;
+	const int dfsaf = +999;
+	const int df = -999;
+
+	int  dfsd;
+	int a = 5;
+	int wwww = 5 + dfsaf - (5 * df / (1 + 4 / 6) + dfsaf);
+
+	dfsd = (5 * 6 + 9) * sdfsfa;
+	print(wwww + dfsd / 5 + 3);
+	;
+	;
+	;
+	;
+	
 }

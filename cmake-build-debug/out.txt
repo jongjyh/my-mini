@@ -1,0 +1,63 @@
+.constants:
+	0 S "main"
+	1 I 5
+	2 I 999
+	3 I 1
+	4 I 4
+	5 I 6
+	6 I 9
+	7 I 3
+
+.start:
+
+.functions:
+	0 0 0 1
+
+.F0:
+	0 loadc 1
+	1 loadc 2
+	2 loadc 2
+	3 ineg
+	4 ipush 0
+	5 loadc 1
+	6 loadc 1
+	7 loada 0, 1
+	8 iload
+	9 iadd
+	10 loadc 1
+	11 loada 0, 2
+	12 iload
+	13 imul
+	14 loadc 3
+	15 loadc 4
+	16 loadc 5
+	17 idiv
+	18 iadd
+	19 idiv
+	20 loada 0, 1
+	21 iload
+	22 iadd
+	23 isub
+	24 loada 0, 3
+	25 loadc 1
+	26 loadc 5
+	27 imul
+	28 loadc 6
+	29 iadd
+	30 loada 0, 0
+	31 iload
+	32 imul
+	33 istore
+	34 loada 0, 5
+	35 iload
+	36 loada 0, 3
+	37 iload
+	38 loadc 1
+	39 idiv
+	40 iadd
+	41 loadc 7
+	42 iadd
+	43 iprint
+	44 printl
+	45 popn 0
+	46 ret
