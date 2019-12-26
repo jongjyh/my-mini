@@ -1,7 +1,4 @@
-
+int a;
 int main() {
-int a=10;
-while(a>=0)
-print(a);
-
+print("hello\x20world","hello");
 }

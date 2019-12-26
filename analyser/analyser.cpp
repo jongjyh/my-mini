@@ -634,6 +634,7 @@ namespace miniplc0 {
                     addCONST(next.value());
                 _instructions.emplace_back(LOADC, getConstIndex(next.value()));
                 _instructions.emplace_back(SPRINT, 0);
+                next = nextToken();
             } else {
                 unreadToken();
                 auto err = analyseExpression();
@@ -683,11 +684,14 @@ namespace miniplc0 {
          * 查找变量的地址，然后保存。
          */
         int index, level;
-        std::pair<int32_t, int32_t> p = getIndex(str);
-        index = p.first;
-        level = p.second;
+        Var var=getVar(str);
+        index=var.getIndex()-1;
+        level=var.isGlobal1();
         _instructions.emplace_back(Operation::LOADA, level, index);//7
-        _instructions.emplace_back(Operation::ISCAN, 0);//1
+        if(var.getType()==CHAR)
+        _instructions.emplace_back(Operation::CSCAN, 0);//1
+        else if(var.getType()==INT)
+            _instructions.emplace_back(ISCAN,0);
         _instructions.emplace_back(Operation::ISTORE, 0);//1
         insindex += 9;
         //')'
@@ -871,7 +875,7 @@ namespace miniplc0 {
             return std::make_optional<CompilationError>(_current_pos, ErrorCode::ErrInvalidAssignment);
 
         int index, level;
-        index = var.getIndex();
+        index = var.getIndex()-1;
         level = var.isGlobal1();
         _instructions.emplace_back(Operation::LOADA, level, index);//7
         insindex += 7;
@@ -1182,13 +1186,10 @@ namespace miniplc0 {
         if (tk.GetType() != TokenType::IDENTIFIER)
             DieAndPrint("only identifier can be added to the table.");
         std::string s = tk.GetValueString();
-        Var var(++_nextTokenIndex, type, isConst, isUnit, false);
-        Var gvar(++_nextGTokenIndex, type, isConst, isUnit, true);
         if (isGlabol == false)
-            sk[s] = var;
+            sk[s] = Var(++_nextTokenIndex, type, isConst, isUnit, false);
         else
-            sk[s] = gvar;
-
+            sk[s] = Var(++_nextGTokenIndex, type, isConst, isUnit, true);
     }
 
     Var Analyser::_find(const std::string &s, std::map<std::string, Var> &sk) {
@@ -1228,7 +1229,7 @@ namespace miniplc0 {
         if (var.getIndex() != 0)
             return var;
         if (gvar.getIndex() != 0)
-            return var;
+            return gvar;
         return Var();
     }
 
